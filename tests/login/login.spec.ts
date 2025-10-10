@@ -1,4 +1,4 @@
-import { loginFixture as test, expect } from '@/fixtures/login.fixture';
+import { loginFixture as test, expect } from '@/fixtures/login/login.fixture';
 
 test.describe('Login Page', () => {
   test.describe('Login Page Rendering', () => {
@@ -13,43 +13,41 @@ test.describe('Login Page', () => {
   test.describe('Authentication Flow', () => {
     test('should successfully login with valid credentials', async ({
       loginPage,
+      dashboardPage,
       page,
     }) => {
       await loginPage.login('admin@test.com', 'Admin123!');
       await page.waitForURL('/dashboard');
-      await expect(page.getByTestId('dashboard-title')).toContainText(
-        'Dashboard'
-      );
+
+      // Use DashboardPage from fixture
+      await expect(dashboardPage.dashboardTitle).toContainText('Dashboard');
     });
 
     test('should persist session after page reload', async ({
       loginPage,
+      dashboardPage,
       page,
     }) => {
       await loginPage.login('admin@test.com', 'Admin123!');
       await page.waitForURL('/dashboard');
-      await expect(page.getByTestId('dashboard-title')).toContainText(
-        'Dashboard'
-      );
+
+      // Use DashboardPage from fixture
+      await expect(dashboardPage.dashboardTitle).toContainText('Dashboard');
 
       await page.reload();
-      await expect(page.getByTestId('dashboard-title')).toContainText(
-        'Dashboard'
-      );
+      await expect(dashboardPage.dashboardTitle).toContainText('Dashboard');
     });
 
     test('should successfully logout and return to login page', async ({
       loginPage,
-      page,
+      dashboardPage,
     }) => {
       await loginPage.login('admin@test.com', 'Admin123!');
-      await page.waitForURL('/dashboard');
-      await expect(page.getByTestId('dashboard-title')).toContainText(
-        'Dashboard'
-      );
 
-      await page.getByTestId('logout-button').click();
-      await expect(page).toHaveURL('/login');
+      // Use DashboardPage from fixture for logout
+      await dashboardPage.logout();
+
+      // Verify we're back on login page
       await expect(loginPage.loginButton).toBeVisible();
     });
 
@@ -132,6 +130,7 @@ test.describe('Login Page', () => {
 
     test('should maintain password value when toggling visibility during login flow', async ({
       loginPage,
+      dashboardPage,
       page,
     }) => {
       // Fill email
@@ -156,9 +155,9 @@ test.describe('Login Page', () => {
       // Submit and verify login works
       await loginPage.loginButton.click();
       await page.waitForURL('/dashboard');
-      await expect(page.getByTestId('dashboard-title')).toContainText(
-        'Dashboard'
-      );
+
+      // Use DashboardPage from fixture to verify successful login
+      await expect(dashboardPage.dashboardTitle).toContainText('Dashboard');
     });
   });
   test.describe('Form Validation', () => {
