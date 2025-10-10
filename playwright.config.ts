@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
@@ -11,6 +11,9 @@ export default defineConfig({
     baseURL: 'http://localhost:3456',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+
+    // Standard viewport for consistency across tests
+    viewport: { width: 1280, height: 720 },
   },
 
   projects: [
@@ -35,4 +38,4 @@ export default defineConfig({
     url: 'http://localhost:3456',
     reuseExistingServer: !process.env.CI,
   },
-})
+});
