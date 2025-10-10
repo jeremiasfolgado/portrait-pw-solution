@@ -6,23 +6,7 @@
  */
 
 import { Page } from '@playwright/test';
-
-/**
- * Product interface matching the application's Product type
- */
-export interface Product {
-  id: string;
-  sku: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  category: 'Electronics' | 'Accessories' | 'Software' | 'Hardware';
-  lowStockThreshold: number;
-  imageUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Product } from '@/types/product.types';
 
 /**
  * Storage key used by the application (from app/lib/products.ts)
