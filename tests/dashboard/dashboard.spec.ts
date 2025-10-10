@@ -31,14 +31,14 @@ test.describe('Dashboard', () => {
     test('should display correct name for admin user', async ({
       dashboardPage,
     }) => {
-      const userName = await dashboardPage.getUserName();
+      const userName = await dashboardPage.navbar.getUserName();
       expect(userName).toBe('Admin User');
     });
 
     test('should display correct name for regular user', async ({
       dashboardPage,
     }) => {
-      const userName = await dashboardPage.getUserName();
+      const userName = await dashboardPage.navbar.getUserName();
       expect(userName).toBe('Regular User');
     });
   });
@@ -116,7 +116,7 @@ test.describe('Dashboard', () => {
       dashboardPage,
       page,
     }) => {
-      await dashboardPage.navigateToProducts();
+      await dashboardPage.navbar.navigateToProducts();
       await expect(page).toHaveURL('/products');
     });
 
@@ -124,7 +124,7 @@ test.describe('Dashboard', () => {
       dashboardPage,
       page,
     }) => {
-      await dashboardPage.navigateToInventory();
+      await dashboardPage.navbar.navigateToInventory();
       await expect(page).toHaveURL('/inventory');
     });
   });

@@ -1,4 +1,5 @@
 import { Page, Locator } from '@playwright/test';
+import { NavbarPage } from './navbar.page';
 
 /**
  * Page Object Model for the Dashboard Page
@@ -8,9 +9,12 @@ import { Page, Locator } from '@playwright/test';
  *
  * ## Features
  * - Access to all dashboard statistics (Total Products, Low Stock, Total Value)
- * - Navigation methods for moving between pages
- * - User information retrieval
- * - Logout functionality
+ * - Navigation through composed NavbarPage component
+ *
+ * ## Design Pattern: Composition
+ *
+ * This class uses composition to include NavbarPage functionality.
+ * All navigation, user info, and logout methods are accessed through the navbar property.
  *
  * ## Design Notes
  * The Dashboard page is identical for both Admin and Regular users. The only visible
@@ -22,18 +26,21 @@ import { Page, Locator } from '@playwright/test';
  * const dashboardPage = new DashboardPage(page);
  * await dashboardPage.goto();
  *
- * // Get user information
- * const userName = await dashboardPage.getUserName();
+ * // Get user information from navbar
+ * const userName = await dashboardPage.navbar.getUserName();
  *
- * // Navigate to other pages
- * await dashboardPage.navigateToProducts();
+ * // Navigate to other pages using navbar
+ * await dashboardPage.navbar.navigateToProducts();
  *
- * // Logout
- * await dashboardPage.logout();
+ * // Logout using navbar
+ * await dashboardPage.navbar.logout();
  * ```
  */
 export class DashboardPage {
   readonly page: Page;
+
+  // Navigation component (shared across all authenticated pages)
+  readonly navbar: NavbarPage;
 
   // Main dashboard elements
   readonly dashboardTitle: Locator;
@@ -47,15 +54,6 @@ export class DashboardPage {
   readonly recentActivityTitle: Locator;
   readonly activityList: Locator;
 
-  // Navbar elements
-  readonly navbar: Locator;
-  readonly navLogo: Locator;
-  readonly navDashboard: Locator;
-  readonly navProducts: Locator;
-  readonly navInventory: Locator;
-  readonly userName: Locator;
-  readonly logoutButton: Locator;
-
   /**
    * Creates a new DashboardPage instance
    * Initializes all locators using data-testid attributes for stability
@@ -64,6 +62,9 @@ export class DashboardPage {
    */
   constructor(page: Page) {
     this.page = page;
+
+    // Initialize navbar component
+    this.navbar = new NavbarPage(page);
 
     // Main dashboard elements
     this.dashboardTitle = page.getByTestId('dashboard-title');
@@ -76,15 +77,6 @@ export class DashboardPage {
     // Recent activity section
     this.recentActivityTitle = page.getByTestId('recent-activity-title');
     this.activityList = page.getByTestId('activity-list');
-
-    // Navbar elements - Available for all authenticated users
-    this.navbar = page.getByTestId('navbar');
-    this.navLogo = page.getByTestId('nav-logo');
-    this.navDashboard = page.getByTestId('nav-dashboard');
-    this.navProducts = page.getByTestId('nav-products');
-    this.navInventory = page.getByTestId('nav-inventory');
-    this.userName = page.getByTestId('user-name');
-    this.logoutButton = page.getByTestId('logout-button');
   }
 
   /**
@@ -97,25 +89,6 @@ export class DashboardPage {
    */
   async goto() {
     await this.page.goto('/dashboard');
-  }
-
-  /**
-   * Gets the displayed user name from the navbar
-   *
-   * This is the primary difference between Admin and Regular users:
-   * - Admin user shows: "Admin User"
-   * - Regular user shows: "Regular User"
-   *
-   * @returns The user name as displayed in the navbar
-   *
-   * @example
-   * ```typescript
-   * const userName = await dashboardPage.getUserName();
-   * expect(userName).toBe('Admin User'); // or 'Regular User'
-   * ```
-   */
-  async getUserName(): Promise<string> {
-    return (await this.userName.textContent()) || '';
   }
 
   /**
@@ -175,50 +148,5 @@ export class DashboardPage {
     if (!match) return 0;
     // Remove commas and parse as float
     return parseFloat(match[1].replace(/,/g, ''));
-  }
-
-  /**
-   * Logs out the current user by clicking the logout button
-   * Automatically waits for navigation to the login page
-   *
-   * @example
-   * ```typescript
-   * await dashboardPage.logout();
-   * await expect(page).toHaveURL('/login');
-   * ```
-   */
-  async logout() {
-    await this.logoutButton.click();
-    await this.page.waitForURL('/login');
-  }
-
-  /**
-   * Navigates to the Products page using the navbar link
-   * Automatically waits for navigation to complete
-   *
-   * @example
-   * ```typescript
-   * await dashboardPage.navigateToProducts();
-   * await expect(page).toHaveURL('/products');
-   * ```
-   */
-  async navigateToProducts() {
-    await this.navProducts.click();
-    await this.page.waitForURL('/products');
-  }
-
-  /**
-   * Navigates to the Inventory page using the navbar link
-   * Automatically waits for navigation to complete
-   *
-   * @example
-   * ```typescript
-   * await dashboardPage.navigateToInventory();
-   * await expect(page).toHaveURL('/inventory');
-   * ```
-   */
-  async navigateToInventory() {
-    await this.navInventory.click();
-    await this.page.waitForURL('/inventory');
   }
 }

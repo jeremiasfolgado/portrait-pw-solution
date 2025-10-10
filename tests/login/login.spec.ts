@@ -44,8 +44,8 @@ test.describe('Login Page', () => {
     }) => {
       await loginPage.login('admin@test.com', 'Admin123!');
 
-      // Use DashboardPage from fixture for logout
-      await dashboardPage.logout();
+      // Use navbar component from DashboardPage for logout
+      await dashboardPage.navbar.logout();
 
       // Verify we're back on login page
       await expect(loginPage.loginButton).toBeVisible();
