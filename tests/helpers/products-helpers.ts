@@ -1,45 +1,17 @@
 /**
  * Products Test Helpers
  *
- * Helper functions to read and filter products from localStorage,
- * replicating the application's filtering logic for robust test validations.
+ * Helper functions to filter and sort products.
+ * Replicates the application's filtering logic for robust test validations.
+ * Uses centralized storage-helpers for localStorage operations.
  */
 
 import { Page } from '@playwright/test';
 import { Product, ProductFilterOptions } from '@/types/product.types';
+import { getProductsFromLocalStorage } from './storage-helpers';
 
-/**
- * Storage key used by the application
- */
-const STORAGE_KEY = 'qa_challenge_products';
-
-/**
- * Reads products from localStorage in the browser context
- *
- * @param page - Playwright Page object
- * @returns Array of products from localStorage
- *
- * @example
- * ```typescript
- * const products = await getProductsFromLocalStorage(page);
- * const filtered = filterProductsByCategory(products, 'Electronics');
- * ```
- */
-export async function getProductsFromLocalStorage(
-  page: Page
-): Promise<Product[]> {
-  const productsJson = await page.evaluate((storageKey) => {
-    return localStorage.getItem(storageKey);
-  }, STORAGE_KEY);
-
-  if (!productsJson) {
-    throw new Error(
-      `No products found in localStorage with key: ${STORAGE_KEY}`
-    );
-  }
-
-  return JSON.parse(productsJson);
-}
+// Re-export for convenience
+export { getProductsFromLocalStorage };
 
 /**
  * Filters products by search term (name or SKU)

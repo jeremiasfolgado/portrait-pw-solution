@@ -37,7 +37,7 @@ export class LoginPage {
   /**
    * Performs login with given credentials
    * Fills email and password fields, then clicks the login button
-   * Note: Focus is applied to each field before filling to ensure compatibility with webkit
+   * Note: Uses waitFor + focus + fill pattern for maximum webkit stability
    *
    * @param email - User email address
    * @param password - User password
@@ -49,10 +49,13 @@ export class LoginPage {
    * ```
    */
   async login(email: string, password: string) {
-    // Focus first to ensure field is ready (especially important for webkit)
+    // Wait for element to be ready, then focus and fill
+    // This pattern is critical for webkit stability
+    await this.emailInput.waitFor({ state: 'visible' });
     await this.emailInput.focus();
     await this.emailInput.fill(email);
 
+    await this.passwordInput.waitFor({ state: 'visible' });
     await this.passwordInput.focus();
     await this.passwordInput.fill(password);
 

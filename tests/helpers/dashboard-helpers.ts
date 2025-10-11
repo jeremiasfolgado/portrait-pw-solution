@@ -2,47 +2,18 @@
  * Dashboard Test Helpers
  *
  * Helper functions to calculate expected dashboard stats based on products.
- * Reads products from localStorage to avoid hardcoding and duplication.
+ * Uses centralized storage-helpers for localStorage operations.
  */
 
 import { Page } from '@playwright/test';
 import { Product } from '@/types/product.types';
+import {
+  getProductsFromLocalStorage,
+  getLowStockProducts,
+} from './storage-helpers';
 
-/**
- * Storage key used by the application (from app/lib/products.ts)
- */
-const STORAGE_KEY = 'qa_challenge_products';
-
-/**
- * Reads products from localStorage in the browser context
- *
- * This reads the actual products state from the application's localStorage,
- * avoiding duplication and ensuring tests validate real application data.
- *
- * @param page - Playwright Page object
- * @returns Array of products from localStorage
- *
- * @example
- * ```typescript
- * const products = await getProductsFromLocalStorage(page);
- * const expectedStats = calculateExpectedStats(products);
- * ```
- */
-export async function getProductsFromLocalStorage(
-  page: Page
-): Promise<Product[]> {
-  const productsJson = await page.evaluate((storageKey) => {
-    return localStorage.getItem(storageKey);
-  }, STORAGE_KEY);
-
-  if (!productsJson) {
-    throw new Error(
-      `No products found in localStorage with key: ${STORAGE_KEY}`
-    );
-  }
-
-  return JSON.parse(productsJson);
-}
+// Re-export for convenience
+export { getProductsFromLocalStorage };
 
 /**
  * Calculates expected dashboard stats based on a product list
@@ -65,9 +36,8 @@ export async function getProductsFromLocalStorage(
 export function calculateExpectedStats(products: Product[]) {
   const totalProducts = products.length;
 
-  const lowStockItems = products.filter(
-    (p) => p.stock <= p.lowStockThreshold
-  ).length;
+  // Use centralized low stock calculation
+  const lowStockItems = getLowStockProducts(products).length;
 
   const totalValue = products.reduce((sum, p) => sum + p.price * p.stock, 0);
 
