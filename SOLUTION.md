@@ -9,24 +9,33 @@
 
 ## 🚧 Work In Progress
 
-> **Note:** This solution already completes **Level 1 (Required) and Level 2 (Intermediate) at 100%**, with 180 tests passing across all browsers. However, there are **3 days remaining** before the deadline, which provides opportunity for additional enhancements.
+> **Note:** This solution already completes **Level 1 (Required) and Level 2 (Intermediate) at 100%**, with 180 tests passing across all browsers and **CI/CD pipeline implemented**. There are **2 days remaining** before the deadline for potential enhancements.
 
 **Current Status:**
 
-- ✅ Level 1: Complete (100%)
-- ✅ Level 2: Complete (100%)
-- 🟡 Level 3: Partial (example E2E exists, room for custom implementations)
+- ✅ Level 1 (Required): Complete (100%)
+- ✅ Level 2 (Intermediate): Complete (100%)
+- ✅ Level 3 (Advanced): **Significant Progress**
+  - ✅ GitHub Actions CI/CD workflow implemented and verified
+  - ✅ E2E example exists in challenges/
+  - 🟡 Room for additional custom E2E journeys
+
+**Implemented (Day 5):**
+
+- [x] **GitHub Actions CI/CD workflow** - 3-browser parallel matrix, automated testing on push/PR
+- [x] **Complete documentation suite** - SOLUTION.md, SELECTORS.md, CONTEXT.md, BITACORA.md
+- [x] **Production-ready pipeline** - All tests passing in CI (180/180 across 3 browsers)
 
 **Potential Additions (Time Permitting):**
 
-- [ ] Custom E2E user journeys beyond provided example
-- [ ] GitHub Actions CI/CD workflow
+- [ ] Additional custom E2E user journeys beyond provided example
 - [ ] Visual regression testing implementation
 - [ ] Performance testing integration
 - [ ] Accessibility testing with axe-core
+- [ ] CI enhancements (test result comments on PRs, notifications)
 
 **Why This Matters:**  
-While the solution already exceeds requirements, these additions would demonstrate advanced capabilities and initiative. The current implementation provides a solid, production-ready foundation.
+The solution now includes production-ready CI/CD, demonstrating DevOps capabilities and automation best practices. All Level 1 and Level 2 requirements are exceeded, with significant Level 3 completion.
 
 ---
 
@@ -51,20 +60,21 @@ While the solution already exceeds requirements, these additions would demonstra
 
 - ✅ **Level 1 (Required): 100% Complete**
 - ✅ **Level 2 (Intermediate): 100% Complete**
-- 🟡 **Level 3 (Advanced): Partial** (E2E example exists)
+- ✅ **Level 3 (Advanced): Significant Progress** (CI/CD + E2E example)
 
 ### Key Metrics
 
 | Metric             | Value                                                          |
 | ------------------ | -------------------------------------------------------------- |
 | Total Tests        | 180 (60 per browser)                                           |
-| Success Rate       | 100% across all browsers                                       |
+| Success Rate       | 100% across all browsers (local + CI)                          |
 | POMs Created       | 6 (Login, Dashboard, Navbar, Products, ProductForm, Inventory) |
 | Fixtures           | 5 with auto-authentication                                     |
 | Helpers            | 5 with data-driven validation                                  |
 | Linter Errors      | 0                                                              |
 | Edge Case Coverage | Comprehensive (extreme numbers, boundaries)                    |
-| Execution Time     | ~38s (chromium), ~2.3min (all browsers)                        |
+| Execution Time     | ~38s (chromium), ~2.3min (all browsers), ~3-4min (CI parallel) |
+| CI/CD Pipeline     | ✅ GitHub Actions (3-browser matrix)                           |
 
 ---
 
@@ -505,6 +515,32 @@ npm run test:debug
 # View HTML report
 npx playwright show-report
 ```
+
+### CI/CD Pipeline
+
+**GitHub Actions** automatically runs tests on every push and pull request:
+
+```yaml
+Workflow: .github/workflows/playwright.yml
+Trigger: push/PR to main/master
+Strategy: 3-browser parallel matrix (chromium, firefox, webkit)
+Execution Time: ~3-4 minutes (parallel)
+Reports: Uploaded as artifacts (30-day retention)
+Traces: Uploaded on failure (debugging)
+```
+
+**To view CI results:**
+
+1. Go to your GitHub repository
+2. Click on the **Actions** tab
+3. View the latest workflow run
+4. Download artifacts:
+   - `playwright-report-chromium`
+   - `playwright-report-firefox`
+   - `playwright-report-webkit`
+5. Extract and serve locally: `npx playwright show-report <report-folder>`
+
+**Reference:** Implementation based on [Playwright official documentation](https://playwright.dev/docs/ci-intro#setting-up-github-actions)
 
 ### Linting Commands
 
@@ -1110,21 +1146,28 @@ expect(actualLowStock).toBe(expected.lowStockItems);
 
 ### For CI/CD
 
-1. **GitHub Actions Workflow**
+1. **✅ GitHub Actions Workflow** - **IMPLEMENTED (Day 5)**
 
    ```yaml
-   - Run on PR
-   - Browser matrix
-   - Parallel sharding
-   - Upload reports
-   - Fail fast strategy
+   ✅ Run on push/PR to main/master
+   ✅ 3-browser parallel matrix
+   ✅ Upload HTML reports (30-day retention)
+   ✅ Upload traces on failure
+   ✅ npm cache for faster builds
+   ✅ Browser-specific installation
    ```
+
+   **Additional Enhancements (Future):**
+
+   - [ ] Parallel sharding for faster execution
+   - [ ] Test result comments on PRs
+   - [ ] Slack/Discord notifications
 
 2. **Test Reporting**
 
-   - Integration with reporting tools
-   - Result trending
-   - Slack/Discord alerts
+   - Integration with reporting tools (e.g., Allure, ReportPortal)
+   - Result trending and analytics
+   - Custom dashboards
 
 3. **Scheduled Runs**
    - Nightly complete runs
@@ -1251,7 +1294,8 @@ Comprehensive catalog of all selectors:
 - **Day 2:** Login POM and tests (6h)
 - **Day 3:** Dashboard + Products + Navbar (8h)
 - **Day 4:** Inventory + DRY refactoring + webkit fix (6h)
-- **Total:** ~22 hours
+- **Day 5:** CI/CD + Complete documentation (3h)
+- **Total:** ~25 hours over 5 days
 
 ---
 
@@ -1262,6 +1306,7 @@ Comprehensive catalog of all selectors:
 3. **Webkit requires care** - Always `waitFor` before `fill`
 4. **DRY applies to helpers too** - Not just production code
 5. **Data-driven is superior** - More robust and maintainable tests
+6. **CI/CD from day 1** - Setting up automation early pays dividends
 
 ---
 
@@ -1273,4 +1318,4 @@ Comprehensive catalog of all selectors:
 
 ---
 
-**Note:** This solution demonstrates production-ready test automation with industry best practices. While Level 1 and Level 2 are complete, the remaining time allows for potential Level 3 enhancements if desired.
+**Note:** This solution demonstrates production-ready test automation with industry best practices and CI/CD automation. Level 1 and Level 2 are 100% complete, with significant Level 3 progress (CI/CD pipeline operational). The remaining 2 days allow for additional enhancements if desired.
