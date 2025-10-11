@@ -1,0 +1,69 @@
+{
+  "inventoryManagement": [
+    {
+      "sku": "E2E-INV-LAPTOP-001",
+      "name": "Business Laptop",
+      "description": "High-performance laptop for inventory testing",
+      "category": "Electronics",
+      "price": 1299.99,
+      "stock": 50,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "E2E-INV-MOUSE-001",
+      "name": "Wireless Mouse",
+      "description": "Ergonomic wireless mouse",
+      "category": "Accessories",
+      "price": 29.99,
+      "stock": 8,
+      "lowStockThreshold": 10
+    }
+  ],
+  "errorRecovery": {
+    "sku": "E2E-RECOVER-001",
+    "name": "Recovery Test Product",
+    "description": "Product for error recovery testing",
+    "category": "Electronics",
+    "price": 149.99,
+    "stock": 25,
+    "lowStockThreshold": 5
+  },
+  "searchAndFilter": [
+    {
+      "sku": "E2E-SEARCH-LAPTOP-001",
+      "name": "Dell Laptop Premium",
+      "description": "High-end laptop",
+      "category": "Electronics",
+      "price": 1599.99,
+      "stock": 20,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "E2E-SEARCH-LAPTOP-002",
+      "name": "HP Laptop Budget",
+      "description": "Budget-friendly laptop",
+      "category": "Electronics",
+      "price": 599.99,
+      "stock": 35,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "E2E-SEARCH-MOUSE-001",
+      "name": "Wireless Mouse Premium",
+      "description": "High-quality wireless mouse",
+      "category": "Accessories",
+      "price": 79.99,
+      "stock": 50,
+      "lowStockThreshold": 10
+    }
+  ],
+  "multiUser": {
+    "sku": "E2E-COLLAB-001",
+    "name": "Collaborative Product",
+    "description": "Product for multi-user workflow testing",
+    "category": "Hardware",
+    "price": 299.99,
+    "stock": 30,
+    "lowStockThreshold": 10
+  }
+}
