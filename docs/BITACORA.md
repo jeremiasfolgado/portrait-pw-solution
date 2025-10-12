@@ -340,4 +340,80 @@ Running 300 tests using 4 workers
 
 ---
 
+## Day 4 (continued) - Visual Regression Testing
+
+**Date**: October 12, 2025  
+**Focus**: Implementing visual regression testing with Docker
+
+### Visual Regression Implementation
+
+**Objective**: Add screenshot-based visual regression testing to detect unintended UI changes.
+
+**Challenge**: Snapshots are OS-specific (macOS vs Ubuntu). GitHub Actions runs on Ubuntu, so local snapshots on macOS won't match CI.
+
+**Solution**: Use Docker with Ubuntu-based Playwright image to generate snapshots that match CI environment.
+
+### Implementation Details
+
+1. **Docker Setup**
+
+   - Created `Dockerfile` with Playwright v1.51.1 on Ubuntu jammy (matching Next.js peer dependency)
+   - Created `docker-compose.yml` for easy snapshot generation
+   - Added `.gitignore` rules to ignore macOS snapshots (`*-darwin.png`)
+   - Only Linux snapshots (`*-linux.png`) are committed
+
+2. **Test Suite**
+
+   - Created `tests/login/login.visual.spec.ts`
+   - 4 visual tests for login page:
+     - Initial state
+     - Password visibility toggle
+     - Filled form
+     - Invalid credentials error
+   - 12 snapshots total (4 tests × 3 browsers)
+
+3. **Commands**
+
+   - `npm run docker:update-snapshots` - Generate/update snapshots in Docker
+   - `npm run test:visual` - Run visual tests locally
+   - `npm run test:visual:update` - Update snapshots locally (macOS - for debugging)
+
+4. **CI Integration**
+
+   - Updated GitHub Actions workflow to run all tests (functional + visual)
+   - Separated artifact uploads:
+     - Playwright HTML report
+     - Test traces (`.zip` files for debugging)
+     - Visual test failures (diff/actual screenshots)
+
+5. **Documentation**
+   - Created comprehensive `docs/VISUAL_REGRESSION.md`
+   - Documented Docker workflow and best practices
+   - Included troubleshooting guide
+
+### Key Decisions
+
+- **Docker approach**: Ensures snapshot consistency across environments
+- **Simple workflow**: Single command (`docker:update-snapshots`) instead of complex scripts
+- **Organized structure**: Visual tests alongside functional tests (`login.spec.ts` + `login.visual.spec.ts`)
+- **Selective coverage**: Started with login page as proof of concept
+- **Full-page screenshots**: With animations disabled for consistency
+
+### Lessons Learned
+
+- Docker image version must match local Playwright version exactly
+- Browser rendering differs slightly between OS (fonts, anti-aliasing)
+- Visual tests should capture stable UI states (no animations, loading states)
+- Separate artifacts in CI makes debugging easier
+
+### Metrics
+
+- **Visual tests added**: 4 tests
+- **Snapshots generated**: 12 (4 tests × 3 browsers)
+- **Total test count**: 304 tests (300 functional + 4 visual)
+- **Docker build time**: ~2 minutes
+- **Snapshot generation time**: ~2.5 minutes
+
+---
+
 _End of Work Log_

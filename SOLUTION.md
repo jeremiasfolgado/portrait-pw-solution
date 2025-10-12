@@ -3,13 +3,13 @@
 **Author:** Jeremías Folgado  
 **Date:** October 12, 2025  
 **Framework:** Playwright + TypeScript  
-**Result:** 300 tests passing (100%) across chromium, firefox, and webkit
+**Result:** 304 tests passing (100%) across chromium, firefox, and webkit
 
 ---
 
 ## ✅ Solution Complete
 
-> **Note:** This solution completes **all three levels** of the challenge at 100%, with 300 tests passing across all browsers, **CI/CD pipeline operational**, **4 comprehensive E2E business journeys** implemented, and **data-driven testing architecture** with **dual validation pattern** (localStorage + UI) for maintainable test data management.
+> **Note:** This solution completes **all three levels** of the challenge at 100%, with 304 tests passing across all browsers, **CI/CD pipeline operational**, **4 comprehensive E2E business journeys** implemented, **data-driven testing architecture** with **dual validation pattern** (localStorage + UI), and **visual regression testing** with Docker for maintainable test data management.
 
 **Final Status:**
 
@@ -26,15 +26,16 @@
 
 - [x] **GitHub Actions CI/CD workflow** - 3-browser parallel matrix, automated testing on push/PR
 - [x] **Complete documentation suite** - SOLUTION.md, SELECTORS.md, CONTEXT.md, BITACORA.md
-- [x] **Production-ready pipeline** - All tests passing in CI (300/300 across 3 browsers)
+- [x] **Production-ready pipeline** - All tests passing in CI (304/304 across 3 browsers)
 - [x] **4 E2E Business Journeys** - Real-world scenarios with multi-module integration
 - [x] **Dual-fixture architecture** - Base and authenticated fixtures for different scenarios
 - [x] **Multi-user testing** - Session management and data persistence validation
 - [x] **Data-driven testing** - 33 organized test products, fast localStorage manipulation
+- [x] **Visual regression testing** - Docker-based screenshot comparison for UI consistency (4 tests, 12 snapshots)
 
 **Potential Future Enhancements:**
 
-- [ ] Visual regression testing implementation
+- [ ] Expand visual regression to dashboard, inventory, and products pages
 - [ ] Performance testing integration
 - [ ] Accessibility testing with axe-core
 - [ ] CI enhancements (test result comments on PRs, Slack notifications)
@@ -71,7 +72,9 @@ The solution demonstrates production-ready test automation with CI/CD, comprehen
 
 | Metric             | Value                                                          |
 | ------------------ | -------------------------------------------------------------- |
-| Total Tests        | 300 (100 per browser: 96 core + 4 E2E)                         |
+| Total Tests        | 304 (300 functional + 4 visual regression)                     |
+| Functional Tests   | 300 (100 per browser: 96 core + 4 E2E)                         |
+| Visual Tests       | 4 login tests × 3 browsers = 12 snapshots                      |
 | Success Rate       | 100% across all browsers (local + CI)                          |
 | POMs Created       | 6 (Login, Dashboard, Navbar, Products, ProductForm, Inventory) |
 | Fixtures           | 7 (5 core + 2 E2E: base & authenticated)                       |
@@ -162,6 +165,40 @@ All tests designed for 3 browsers from the start:
 - `waitFor → focus → fill` pattern for stability
 - Tests validated in chromium, firefox, and webkit
 - Browser-specific quirks handled
+
+#### 6. **Visual Regression Testing with Docker**
+
+Screenshot-based testing to detect unintended UI changes:
+
+- **Docker-based snapshots**: Generated on Ubuntu to match CI environment
+- **OS consistency**: Prevents macOS vs Ubuntu rendering differences
+- **Selective coverage**: Login page (4 tests, 12 snapshots across 3 browsers)
+- **CI integration**: Automatic diff detection with artifact uploads
+- **Simple workflow**: Single command (`npm run docker:update-snapshots`)
+
+**Why Docker?** Browser rendering varies by OS (fonts, anti-aliasing). Docker ensures snapshots generated locally match those in CI (both Ubuntu).
+
+**Implementation:**
+
+```bash
+# Generate snapshots (Ubuntu environment)
+npm run docker:update-snapshots
+
+# Run visual tests locally
+npm run test:visual
+```
+
+**File organization:**
+
+```
+tests/login/
+├── login.spec.ts                    # Functional tests
+├── login.visual.spec.ts             # Visual tests
+└── login.visual.spec.ts-snapshots/
+    ├── login-initial-state-chromium-linux.png
+    ├── login-password-visible-firefox-linux.png
+    └── ... (12 total snapshots)
+```
 
 ---
 
@@ -1375,11 +1412,13 @@ expect(actualLowStock).toBe(expected.lowStockItems);
 
 ### For the Tests
 
-1. **Visual Regression Testing**
+1. **Visual Regression Testing** ✅ **IMPLEMENTED**
 
-   - Implement Playwright screenshot comparison
-   - Capture critical states (login, dashboard, modals)
-   - Detect unintended visual changes
+   - ✅ Playwright screenshot comparison with Docker
+   - ✅ Login page coverage (4 tests, 12 snapshots)
+   - ✅ Baseline images stored in repo (\*-linux.png)
+   - ✅ CI integration with artifact upload for failures
+   - 📋 **Recommended:** Expand to dashboard, inventory, and products pages
 
 2. **Performance Testing**
 

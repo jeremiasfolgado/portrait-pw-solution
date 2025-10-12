@@ -1,5 +1,5 @@
 # Use official Playwright image with Ubuntu (same as GitHub Actions)
-FROM mcr.microsoft.com/playwright:v1.55.1-jammy
+FROM mcr.microsoft.com/playwright:v1.51.1-jammy
 
 # Set working directory
 WORKDIR /app
