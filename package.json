@@ -10,9 +10,9 @@
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
-    "test:functional": "playwright test --grep-invert '.visual.spec.ts'",
     "test:visual": "playwright test --grep '.visual.spec.ts'",
     "test:visual:update": "playwright test --grep '.visual.spec.ts' --update-snapshots",
+    "docker:update-snapshots": "docker-compose run --rm playwright",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix"
   },

@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Mount the tests directory to update snapshots
+      - ./tests:/app/tests
+    environment:
+      - CI=true
+      - FORCE_COLOR=1
+    # Use host network to access the dev server
+    network_mode: host
+    command: npm run test:visual:update

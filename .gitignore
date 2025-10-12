@@ -3,3 +3,8 @@ test-results
 playwright-report
 .next
 .DS_Store
+# Exclude snapshots that are not linux 
+*-darwin.png
+*-win32.png
+# Only allow linux snapshots
+!visual/**/*-linux.png
