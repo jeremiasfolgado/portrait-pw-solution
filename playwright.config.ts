@@ -16,6 +16,14 @@ export default defineConfig({
     viewport: { width: 1280, height: 720 },
   },
 
+  // Visual regression testing configuration
+  expect: {
+    toHaveScreenshot: {
+      // Allow 3% difference for cross-OS font rendering variations
+      maxDiffPixelRatio: 0.03,
+    },
+  },
+
   projects: [
     {
       name: 'chromium',
