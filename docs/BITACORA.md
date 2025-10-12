@@ -357,7 +357,7 @@ Running 300 tests using 4 workers
 
 1. **Docker Setup**
 
-   - Created `Dockerfile` with Playwright v1.51.1 on Ubuntu jammy (matching Next.js peer dependency)
+   - Created `Dockerfile` with Playwright v1.55.1 on Ubuntu jammy (latest compatible with ^1.42.0)
    - Created `docker-compose.yml` for easy snapshot generation
    - Added `.gitignore` rules to ignore macOS snapshots (`*-darwin.png`)
    - Only Linux snapshots (`*-linux.png`) are committed
