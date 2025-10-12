@@ -364,13 +364,13 @@ Running 300 tests using 4 workers
 
 2. **Test Suite**
 
-   - Created `tests/login/login.visual.spec.ts`
-   - 4 visual tests for login page:
-     - Initial state
-     - Password visibility toggle
-     - Filled form
-     - Invalid credentials error
-   - 12 snapshots total (4 tests × 3 browsers)
+   - Created visual test files for all major pages:
+     - `tests/login/login.visual.spec.ts` (4 tests)
+     - `tests/dashboard/dashboard.visual.spec.ts` (2 tests)
+     - `tests/inventory/inventory.visual.spec.ts` (2 tests)
+     - `tests/products/products.visual.spec.ts` (5 tests)
+     - `tests/products/product-form.visual.spec.ts` (4 tests)
+   - 51 snapshots total (17 tests × 3 browsers)
 
 3. **Commands**
 
@@ -408,11 +408,12 @@ Running 300 tests using 4 workers
 
 ### Metrics
 
-- **Visual tests added**: 4 tests
-- **Snapshots generated**: 12 (4 tests × 3 browsers)
-- **Total test count**: 304 tests (300 functional + 4 visual)
+- **Visual tests added**: 17 tests across 5 pages
+- **Snapshots generated**: 51 (17 tests × 3 browsers)
+- **Total test count**: 317 tests (300 functional + 17 visual)
 - **Docker build time**: ~2 minutes
-- **Snapshot generation time**: ~2.5 minutes
+- **Snapshot generation time**: ~3-4 minutes
+- **maxDiffPixelRatio**: 0.03 (3% tolerance for cross-OS font rendering)
 
 ---
 
