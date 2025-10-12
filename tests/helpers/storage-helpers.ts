@@ -8,10 +8,15 @@
  *
  * All other helpers (dashboard, products, inventory) should import from this file
  * instead of duplicating localStorage reading logic.
+ *
+ * ## Data-Driven Testing Support
+ *
+ * This file also provides `ensureProductsExist()` for bulk creating test data
+ * products directly in localStorage, enabling fast and maintainable data-driven tests.
  */
 
 import { Page } from '@playwright/test';
-import { Product } from '@/types/product.types';
+import { Product, type TestProductData } from '@/types/product.types';
 
 /**
  * Storage key used by the application (from app/lib/products.ts)
@@ -131,4 +136,98 @@ export async function getExpectedLowStockProducts(
 ): Promise<Product[]> {
   const products = await getProductsFromLocalStorage(page);
   return getLowStockProducts(products);
+}
+
+/**
+ * Clears all products from localStorage
+ *
+ * Useful for resetting test state before loading test data
+ *
+ * @param page - Playwright Page object
+ *
+ * @example
+ * ```typescript
+ * await clearAllProducts(page);
+ * ```
+ */
+export async function clearAllProducts(page: Page): Promise<void> {
+  await page.evaluate((storageKey) => {
+    localStorage.setItem(storageKey, JSON.stringify([]));
+  }, STORAGE_KEY);
+}
+
+/**
+ * Ensures products exist in localStorage by adding only those that don't exist
+ *
+ * Validates existing products by SKU to avoid duplicates. This is much faster
+ * than creating products one by one through the UI.
+ *
+ * Automatically adds createdAt and updatedAt timestamps if not provided.
+ *
+ * @param page - Playwright Page object
+ * @param products - Array of product data to ensure exist
+ * @returns Array of IDs for products that were added (not existing ones)
+ *
+ * @example
+ * ```typescript
+ * import testData from '@/data/products-test-data.json';
+ *
+ * // Ensure specific products exist
+ * await ensureProductsExist(page, testData.filteringTests as TestProductData[]);
+ *
+ * // Combine multiple datasets
+ * const products = [...testData.sortingTests, ...testData.searchTests];
+ * await ensureProductsExist(page, products as TestProductData[]);
+ * ```
+ */
+export async function ensureProductsExist(
+  page: Page,
+  products: TestProductData[]
+): Promise<string[]> {
+  const addedIds = await page.evaluate(
+    ({ productsToEnsure, storageKey }) => {
+      // Get existing products or initialize empty array
+      const existingProducts = JSON.parse(
+        localStorage.getItem(storageKey) || '[]'
+      );
+
+      // Create a Set of existing SKUs for fast lookup
+      const existingSKUs = new Set(
+        existingProducts.map((p: { sku: string }) => p.sku)
+      );
+
+      // Filter out products that already exist
+      const productsToAdd = productsToEnsure.filter(
+        (product) => !existingSKUs.has(product.sku)
+      );
+
+      // Generate new products with IDs and timestamps
+      // Using same ID format as the app: Date.now().toString()
+      const newProductsWithIds: string[] = [];
+      const now = new Date().toISOString();
+      let timestamp = Date.now();
+
+      const newProducts = productsToAdd.map((product) => {
+        const id = (timestamp++).toString(); // Increment to avoid duplicate IDs
+        newProductsWithIds.push(id);
+        return {
+          ...product,
+          id,
+          createdAt: now,
+          updatedAt: now,
+        };
+      });
+
+      // Merge with existing products
+      const allProducts = [...existingProducts, ...newProducts];
+
+      // Save back to localStorage using correct key
+      localStorage.setItem(storageKey, JSON.stringify(allProducts));
+
+      return newProductsWithIds;
+    },
+    { productsToEnsure: products, storageKey: STORAGE_KEY }
+  );
+
+  return addedIds;
 }

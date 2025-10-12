@@ -10,9 +10,6 @@ import { Page } from '@playwright/test';
 import { Product, ProductFilterOptions } from '@/types/product.types';
 import { getProductsFromLocalStorage } from './storage-helpers';
 
-// Re-export for convenience
-export { getProductsFromLocalStorage };
-
 /**
  * Filters products by search term (name or SKU)
  *

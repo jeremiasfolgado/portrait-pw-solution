@@ -297,6 +297,145 @@ export class ProductsPage {
     return await this.getProductRow(productId).isVisible();
   }
 
+  /**
+   * Gets product data from a table row
+   *
+   * Extracts SKU, name, category, price, and stock from the product row
+   *
+   * @param productId - The ID of the product
+   * @returns Object with product data from the table
+   *
+   * @example
+   * ```typescript
+   * const data = await productsPage.getProductDataFromRow('product-123');
+   * expect(data.name).toBe('Expected Name');
+   * ```
+   */
+  async getProductDataFromRow(productId: string): Promise<{
+    sku: string;
+    name: string;
+    category: string;
+    price: string;
+    stock: string;
+  }> {
+    const row = this.getProductRow(productId);
+    await expect(row).toBeVisible();
+
+    const cells = row.locator('td');
+    const sku = await cells.nth(0).textContent();
+    const name = await cells.nth(1).textContent();
+    const category = await cells.nth(2).textContent();
+    const price = await cells.nth(3).textContent();
+    const stock = await cells.nth(4).textContent();
+
+    return {
+      sku: sku?.trim() || '',
+      name: name?.trim() || '',
+      category: category?.trim() || '',
+      price: price?.trim() || '',
+      stock: stock?.trim() || '',
+    };
+  }
+
+  /**
+   * Checks if a product has a low stock badge (red background)
+   *
+   * @param productId - The ID of the product
+   * @returns True if product has low stock badge, false otherwise
+   *
+   * @example
+   * ```typescript
+   * const hasWarning = await productsPage.hasLowStockBadge('product-123');
+   * expect(hasWarning).toBe(true);
+   * ```
+   */
+  async hasLowStockBadge(productId: string): Promise<boolean> {
+    const row = this.getProductRow(productId);
+    await expect(row).toBeVisible();
+
+    const stockCell = row.locator('td').nth(4);
+    const badge = stockCell.locator('span.bg-red-100');
+    return await badge.isVisible();
+  }
+
+  /**
+   * Gets the product name at a specific index in the table
+   *
+   * @param index - Zero-based index of the product row
+   * @returns The product name
+   *
+   * @example
+   * ```typescript
+   * const firstProductName = await productsPage.getProductNameAtIndex(0);
+   * expect(firstProductName).toBe('Expected First Product');
+   * ```
+   */
+  async getProductNameAtIndex(index: number): Promise<string> {
+    const rows = this.page.locator('[data-testid^="product-row-"]');
+    const row = rows.nth(index);
+    await expect(row).toBeVisible();
+
+    const nameCell = row.locator('td').nth(1);
+    const name = await nameCell.textContent();
+    return name?.trim() || '';
+  }
+
+  /**
+   * Gets the name of the first visible product
+   *
+   * @returns The product name
+   *
+   * @example
+   * ```typescript
+   * const firstProductName = await productsPage.getFirstProductName();
+   * expect(firstProductName).toBe('Expected Name');
+   * ```
+   */
+  async getFirstProductName(): Promise<string> {
+    return await this.getProductNameAtIndex(0);
+  }
+
+  /**
+   * Gets the price of the first visible product
+   *
+   * @returns The product price as string
+   *
+   * @example
+   * ```typescript
+   * const firstProductPrice = await productsPage.getFirstProductPrice();
+   * expect(firstProductPrice).toBe('$99.99');
+   * ```
+   */
+  async getFirstProductPrice(): Promise<string> {
+    const firstRow = this.getFirstProductRow();
+    await expect(firstRow).toBeVisible();
+
+    const priceCell = firstRow.locator('td').nth(3);
+    const price = await priceCell.textContent();
+    return price?.trim() || '';
+  }
+
+  /**
+   * Gets the stock of the first visible product
+   *
+   * @returns The product stock as string
+   *
+   * @example
+   * ```typescript
+   * const firstProductStock = await productsPage.getFirstProductStock();
+   * expect(firstProductStock).toBe('10');
+   * ```
+   */
+  async getFirstProductStock(): Promise<string> {
+    const firstRow = this.getFirstProductRow();
+    await expect(firstRow).toBeVisible();
+
+    const stockCell = firstRow.locator('td').nth(4);
+    const stockBadge = stockCell.locator('span');
+    const stock = await stockBadge.textContent();
+    return stock?.trim() || '';
+  }
+
   // === Delete Modal Methods ===
 
   /**

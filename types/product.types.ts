@@ -72,3 +72,13 @@ export interface ProductFilterOptions {
   category?: 'all' | ProductCategory;
   sortBy?: 'name' | 'price' | 'stock';
 }
+
+/**
+ * Test product data type for data-driven testing
+ *
+ * Allows products without auto-generated fields (id, createdAt, updatedAt).
+ * Matches the structure of products in JSON test data files.
+ *
+ * Usage: When loading products from JSON for tests
+ */
+export type TestProductData = Omit<Product, 'id' | 'createdAt' | 'updatedAt'>;

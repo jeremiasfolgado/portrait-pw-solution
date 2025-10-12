@@ -1,12 +1,19 @@
 import { test as base, expect as baseExpect } from '@playwright/test';
 import { LoginPage } from '@/pages/login.page';
 import { ProductsPage } from '@/pages/products.page';
+import {
+  clearAllProducts,
+  ensureProductsExist,
+} from '@/tests/helpers/storage-helpers';
+import { type TestProductData } from '@/types/product.types';
+import testData from '@/data/products-test-data.json';
 
 /**
- * Products Fixture - Authenticated User on Products Page
+ * Products Fixture - Authenticated User on Products Page with Test Data
  *
  * This fixture provides an authenticated ProductsPage instance ready to use.
- * By default, it logs in as admin user and navigates to the products page.
+ * By default, it logs in as admin user, clears localStorage, loads test data products,
+ * and navigates to the products page.
  *
  * @property {ProductsPage} productsPage - An authenticated ProductsPage instance
  *
@@ -14,31 +21,36 @@ import { ProductsPage } from '@/pages/products.page';
  *
  * @example
  * ```typescript
- * test('should create a new product', async ({ productsPage }) => {
- *   await productsPage.createProduct({
- *     sku: 'TEST-001',
- *     name: 'Test Product',
- *     category: 'Electronics',
- *     price: 99.99,
- *     stock: 50
- *   });
- *   await expect(productsPage.getProductRow('...')).toBeVisible();
+ * test('should filter products', async ({ productsPage }) => {
+ *   await productsPage.filterByCategory('Electronics');
+ *   const count = await productsPage.getProductCount();
+ *   expect(count).toBeGreaterThan(0);
  * });
  * ```
  *
- * ## Authentication
+ * ## Authentication & Test Data
  *
  * The fixture automatically:
  * 1. Logs in as admin user (admin@test.com / Admin123!)
  * 2. Navigates to /products page
- * 3. Provides ready-to-use ProductsPage instance
+ * 3. Loads 23 test data products from products-test-data.json (validates by SKU)
+ * 4. Provides ready-to-use ProductsPage instance
+ * 5. Cleans up products after test completes
+ *
+ * ## Test Data Loaded
+ *
+ * The fixture loads the following products (23 total):
+ * - 12 filteringTests products (3 per category: Electronics, Accessories, Software, Hardware)
+ * - 3 sortingTests products (Alpha, Zeta, Middle - for order validation)
+ * - 5 searchTests products (LAPTOP, laptop, LaPtOp - for case-insensitive search)
+ * - 3 lowStockTests products (2 with low stock, 1 with adequate stock)
+ *
+ * Products are validated by SKU to prevent duplicates, and cleaned up after each test.
  *
  * ## Note
  *
  * Admin credentials are used by default since product management
- * typically requires admin privileges. If you need to test with
- * a regular user, you can modify the credentials or create a
- * separate fixture.
+ * typically requires admin privileges.
  */
 export const productsFixture = base.extend<{
   productsPage: ProductsPage;
@@ -52,14 +64,23 @@ export const productsFixture = base.extend<{
     // Wait for successful navigation to dashboard
     await page.waitForURL('/dashboard');
 
-    // Create ProductsPage instance and navigate to products
+    // Load robust test data products
+    await ensureProductsExist(page, [
+      ...(testData.filteringTests as TestProductData[]),
+      ...(testData.sortingTests as TestProductData[]),
+      ...(testData.searchTests as TestProductData[]),
+      ...(testData.lowStockTests as TestProductData[]),
+    ]);
+
+    // Create ProductsPage instance and navigate again after data is loaded
     const productsPage = new ProductsPage(page);
     await productsPage.goto();
 
     // Provide authenticated ProductsPage instance to the test
     await use(productsPage);
 
-    // Cleanup happens automatically when test completes
+    // Cleanup: Clear products after test completes
+    await clearAllProducts(page);
   },
 });
 

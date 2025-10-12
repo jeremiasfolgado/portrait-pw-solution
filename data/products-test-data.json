@@ -1,0 +1,293 @@
+{
+  "filteringTests": [
+    {
+      "sku": "ELEC-LAPTOP-001",
+      "name": "Dell XPS 15 Laptop",
+      "description": "Premium laptop with high-end specs",
+      "category": "Electronics",
+      "price": 1899.99,
+      "stock": 15,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "ELEC-LAPTOP-002",
+      "name": "MacBook Pro 16",
+      "description": "Apple laptop for professionals",
+      "category": "Electronics",
+      "price": 2499.99,
+      "stock": 8,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "ELEC-PHONE-001",
+      "name": "iPhone 15 Pro",
+      "description": "Latest iPhone model",
+      "category": "Electronics",
+      "price": 1199.99,
+      "stock": 30,
+      "lowStockThreshold": 15
+    },
+    {
+      "sku": "ACC-MOUSE-001",
+      "name": "Logitech MX Master 3",
+      "description": "Professional wireless mouse",
+      "category": "Accessories",
+      "price": 99.99,
+      "stock": 45,
+      "lowStockThreshold": 20
+    },
+    {
+      "sku": "ACC-KEYBOARD-001",
+      "name": "Mechanical Keyboard Pro",
+      "description": "RGB mechanical gaming keyboard",
+      "category": "Accessories",
+      "price": 149.99,
+      "stock": 25,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "ACC-HEADSET-001",
+      "name": "Wireless Headset Premium",
+      "description": "Noise-cancelling wireless headset",
+      "category": "Accessories",
+      "price": 199.99,
+      "stock": 3,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "SOFT-OFFICE-001",
+      "name": "Microsoft Office 365",
+      "description": "Productivity software suite",
+      "category": "Software",
+      "price": 69.99,
+      "stock": 100,
+      "lowStockThreshold": 50
+    },
+    {
+      "sku": "SOFT-ANTIVIRUS-001",
+      "name": "Norton Antivirus Pro",
+      "description": "Complete security solution",
+      "category": "Software",
+      "price": 39.99,
+      "stock": 150,
+      "lowStockThreshold": 30
+    },
+    {
+      "sku": "SOFT-DESIGN-001",
+      "name": "Adobe Creative Cloud",
+      "description": "Design and editing suite",
+      "category": "Software",
+      "price": 52.99,
+      "stock": 75,
+      "lowStockThreshold": 25
+    },
+    {
+      "sku": "HARD-SSD-001",
+      "name": "Samsung 1TB SSD",
+      "description": "High-speed solid state drive",
+      "category": "Hardware",
+      "price": 129.99,
+      "stock": 40,
+      "lowStockThreshold": 15
+    },
+    {
+      "sku": "HARD-RAM-001",
+      "name": "Corsair 32GB RAM Kit",
+      "description": "DDR4 memory kit",
+      "category": "Hardware",
+      "price": 159.99,
+      "stock": 2,
+      "lowStockThreshold": 8
+    },
+    {
+      "sku": "HARD-GPU-001",
+      "name": "NVIDIA RTX 4090",
+      "description": "High-end graphics card",
+      "category": "Hardware",
+      "price": 1599.99,
+      "stock": 5,
+      "lowStockThreshold": 3
+    }
+  ],
+  "sortingTests": [
+    {
+      "sku": "SORT-A-001",
+      "name": "Alpha Product",
+      "description": "First alphabetically",
+      "category": "Electronics",
+      "price": 500.0,
+      "stock": 50,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "SORT-Z-001",
+      "name": "Zeta Product",
+      "description": "Last alphabetically",
+      "category": "Accessories",
+      "price": 10.0,
+      "stock": 5,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "SORT-M-001",
+      "name": "Middle Product",
+      "description": "Middle alphabetically",
+      "category": "Software",
+      "price": 1000.0,
+      "stock": 100,
+      "lowStockThreshold": 10
+    }
+  ],
+  "searchTests": [
+    {
+      "sku": "SEARCH-UPPER-001",
+      "name": "LAPTOP",
+      "description": "All uppercase product name",
+      "category": "Electronics",
+      "price": 999.99,
+      "stock": 20,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "SEARCH-LOWER-001",
+      "name": "laptop",
+      "description": "All lowercase product name",
+      "category": "Electronics",
+      "price": 799.99,
+      "stock": 18,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "SEARCH-MIXED-001",
+      "name": "LaPtOp",
+      "description": "Mixed case product name",
+      "category": "Electronics",
+      "price": 899.99,
+      "stock": 15,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "SEARCH-PRO-001",
+      "name": "Professional Laptop Pro Max",
+      "description": "Contains Pro in name",
+      "category": "Electronics",
+      "price": 1499.99,
+      "stock": 12,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "search-sku-001",
+      "name": "SKU Search Test",
+      "description": "For testing SKU search",
+      "category": "Accessories",
+      "price": 49.99,
+      "stock": 30,
+      "lowStockThreshold": 10
+    }
+  ],
+  "lowStockTests": [
+    {
+      "sku": "LOW-001",
+      "name": "Low Stock Item 1",
+      "description": "Product with low stock",
+      "category": "Electronics",
+      "price": 299.99,
+      "stock": 2,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "LOW-002",
+      "name": "Low Stock Item 2",
+      "description": "Another low stock product",
+      "category": "Hardware",
+      "price": 399.99,
+      "stock": 1,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "GOOD-001",
+      "name": "Good Stock Item",
+      "description": "Product with adequate stock",
+      "category": "Software",
+      "price": 199.99,
+      "stock": 50,
+      "lowStockThreshold": 10
+    }
+  ],
+  "edgeCases": [
+    {
+      "sku": "EDGE-PRICE-MIN",
+      "name": "Minimum Price Product",
+      "description": "Product with minimum valid price",
+      "category": "Accessories",
+      "price": 0.01,
+      "stock": 100,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "EDGE-PRICE-MAX",
+      "name": "Maximum Price Product",
+      "description": "Product with very high price",
+      "category": "Hardware",
+      "price": 9999.99,
+      "stock": 1,
+      "lowStockThreshold": 1
+    },
+    {
+      "sku": "EDGE-STOCK-ZERO",
+      "name": "Zero Stock Product",
+      "description": "Product with no stock",
+      "category": "Electronics",
+      "price": 499.99,
+      "stock": 0,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "EDGE-LONG-NAME",
+      "name": "This is a Very Long Product Name That Tests the Display and Handling of Extended Names in the UI",
+      "description": "Testing long names",
+      "category": "Software",
+      "price": 29.99,
+      "stock": 15,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "EDGE-SPECIAL-CHARS",
+      "name": "Product with Special & Characters #1",
+      "description": "Testing special characters in name",
+      "category": "Accessories",
+      "price": 19.99,
+      "stock": 25,
+      "lowStockThreshold": 10
+    }
+  ],
+  "combinedFilterTests": [
+    {
+      "sku": "COMBO-ELEC-PRO-001",
+      "name": "Electronic Pro Device",
+      "description": "For testing combined filters - Electronics + Pro",
+      "category": "Electronics",
+      "price": 699.99,
+      "stock": 20,
+      "lowStockThreshold": 5
+    },
+    {
+      "sku": "COMBO-ACC-PRO-001",
+      "name": "Professional Accessory",
+      "description": "For testing combined filters - Accessories + Pro",
+      "category": "Accessories",
+      "price": 89.99,
+      "stock": 35,
+      "lowStockThreshold": 10
+    },
+    {
+      "sku": "COMBO-SOFT-PRO-001",
+      "name": "Professional Software Suite",
+      "description": "For testing combined filters - Software + Pro",
+      "category": "Software",
+      "price": 149.99,
+      "stock": 60,
+      "lowStockThreshold": 20
+    }
+  ]
+}
