@@ -107,11 +107,14 @@ test.describe('Inventory Management', () => {
       // Adjust stock
       await inventoryPage.adjustStock(firstId, adjustment);
 
-      // Verify stock increased in localStorage
+      // Verify stock increased in localStorage (source of truth)
       const productAfter = await getProductFromStorage(page, firstId);
       const expectedStock = calculateExpectedStock(initialStock, adjustment);
-
       expect(productAfter!.stock).toBe(expectedStock);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
     });
 
     test('should handle large stock increase', async ({
@@ -127,8 +130,13 @@ test.describe('Inventory Management', () => {
 
       await inventoryPage.adjustStock(firstId, adjustment);
 
+      // Verify localStorage (source of truth)
       const productAfter = await getProductFromStorage(page, firstId);
       expect(productAfter!.stock).toBe(initialStock + adjustment);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
     });
 
     test('should handle extremely large numbers (edge case)', async ({
@@ -144,10 +152,14 @@ test.describe('Inventory Management', () => {
 
       await inventoryPage.adjustStock(firstId, adjustment);
 
+      // Verify localStorage (source of truth)
       const productAfter = await getProductFromStorage(page, firstId);
       const expectedStock = calculateExpectedStock(initialStock, adjustment);
-
       expect(productAfter!.stock).toBe(expectedStock);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
     });
   });
 
@@ -170,11 +182,14 @@ test.describe('Inventory Management', () => {
       // Adjust stock
       await inventoryPage.adjustStock(firstId, adjustment);
 
-      // Verify stock decreased
+      // Verify stock decreased in localStorage (source of truth)
       const productAfter = await getProductFromStorage(page, firstId);
       const expectedStock = calculateExpectedStock(initialStock, adjustment);
-
       expect(productAfter!.stock).toBe(expectedStock);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
     });
 
     test('should decrease stock to exactly zero', async ({
@@ -190,8 +205,13 @@ test.describe('Inventory Management', () => {
 
       await inventoryPage.adjustStock(firstId, adjustment);
 
+      // Verify localStorage (source of truth)
       const productAfter = await getProductFromStorage(page, firstId);
       expect(productAfter!.stock).toBe(0);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe('0');
     });
   });
 
@@ -344,9 +364,13 @@ test.describe('Inventory Management', () => {
       await inventoryPage.confirmAdjustButton.click();
       await inventoryPage.adjustStockModal.waitFor({ state: 'hidden' });
 
-      // Verify stock increased
+      // Verify localStorage (source of truth)
       const productAfter = await getProductFromStorage(page, firstId);
       expect(productAfter!.stock).toBe(initialStock + 15);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
     });
 
     test('should handle multiple consecutive adjustments', async ({
@@ -365,6 +389,8 @@ test.describe('Inventory Management', () => {
 
       let product = await getProductFromStorage(page, firstId);
       expect(product!.stock).toBe(currentStock);
+      let stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(product!.stock.toString());
 
       // Second adjustment: decrease
       await inventoryPage.adjustStock(firstId, -5);
@@ -372,6 +398,8 @@ test.describe('Inventory Management', () => {
 
       product = await getProductFromStorage(page, firstId);
       expect(product!.stock).toBe(currentStock);
+      stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(product!.stock.toString());
 
       // Third adjustment: increase again
       await inventoryPage.adjustStock(firstId, 20);
@@ -379,6 +407,8 @@ test.describe('Inventory Management', () => {
 
       product = await getProductFromStorage(page, firstId);
       expect(product!.stock).toBe(currentStock);
+      stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(product!.stock.toString());
     });
 
     test('should clear and update adjustment input value', async ({
@@ -404,9 +434,13 @@ test.describe('Inventory Management', () => {
       await inventoryPage.confirmAdjustButton.click();
       await inventoryPage.adjustStockModal.waitFor({ state: 'hidden' });
 
-      // Should use the final value (25)
+      // Verify localStorage (source of truth)
       const productAfter = await getProductFromStorage(page, firstId);
       expect(productAfter!.stock).toBe(productBefore!.stock + 25);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
     });
   });
 
@@ -439,6 +473,150 @@ test.describe('Inventory Management', () => {
 
       const alertCount = await inventoryPage.getLowStockCount();
       expect(alertCount).toBe(lowStockAfter.length);
+    });
+  });
+
+  test.describe('Stock Threshold Boundary Cases', () => {
+    test('should adjust stock to exactly the threshold', async ({
+      inventoryPage,
+      page,
+    }) => {
+      const firstId = await inventoryPage.getFirstProductId();
+      const productBefore = await getProductFromStorage(page, firstId);
+      expect(productBefore).toBeTruthy();
+
+      const threshold = productBefore!.lowStockThreshold;
+      const adjustment = threshold - productBefore!.stock;
+
+      // Adjust to exact threshold
+      await inventoryPage.adjustStock(firstId, adjustment);
+
+      // Verify localStorage (source of truth)
+      const productAfter = await getProductFromStorage(page, firstId);
+      expect(productAfter!.stock).toBe(threshold);
+
+      // Verify UI reflects localStorage value
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(threshold.toString());
+
+      // Status should be "Low Stock" (stock <= threshold)
+      const status = await inventoryPage.getStatusFromUI(firstId);
+      expect(status).toBe('Low Stock');
+    });
+
+    test('should show Low Stock badge when stock decreases below threshold', async ({
+      inventoryPage,
+      page,
+    }) => {
+      // Find a product with good stock
+      const allProducts = await getProductsFromLocalStorage(page);
+      const goodStockProduct = allProducts.find(
+        (p) => p.stock > p.lowStockThreshold * 2
+      );
+      expect(goodStockProduct).toBeTruthy();
+
+      const productId = goodStockProduct!.id;
+      const threshold = goodStockProduct!.lowStockThreshold;
+
+      // Verify initially has "In Stock" status
+      const statusBefore = await inventoryPage.getStatusFromUI(productId);
+      expect(statusBefore).toBe('In Stock');
+
+      // Badge should not be visible initially
+      const hasBadgeBefore = await inventoryPage.hasLowStockBadge(productId);
+      expect(hasBadgeBefore).toBe(false);
+
+      // Decrease stock below threshold
+      const adjustment = -(goodStockProduct!.stock - threshold + 1);
+      await inventoryPage.adjustStock(productId, adjustment);
+
+      // Verify localStorage (source of truth)
+      const productAfter = await getProductFromStorage(page, productId);
+      expect(productAfter!.stock).toBeLessThanOrEqual(threshold);
+
+      // Verify UI reflects localStorage
+      const stockInUI = await inventoryPage.getStockFromUI(productId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
+
+      // Status should change to "Low Stock"
+      const statusAfter = await inventoryPage.getStatusFromUI(productId);
+      expect(statusAfter).toBe('Low Stock');
+
+      // Badge should now be visible
+      const hasBadgeAfter = await inventoryPage.hasLowStockBadge(productId);
+      expect(hasBadgeAfter).toBe(true);
+    });
+
+    test('should remove Low Stock badge when stock increases above threshold', async ({
+      inventoryPage,
+      page,
+    }) => {
+      // Get a low stock product
+      const lowStockProducts = await getExpectedLowStockProducts(page);
+      expect(lowStockProducts.length).toBeGreaterThan(0);
+
+      const lowStockProduct = lowStockProducts[0];
+      const productId = lowStockProduct.id;
+      const threshold = lowStockProduct.lowStockThreshold;
+
+      // Verify initially has "Low Stock" status
+      const statusBefore = await inventoryPage.getStatusFromUI(productId);
+      expect(statusBefore).toBe('Low Stock');
+
+      // Badge should be visible initially
+      const hasBadgeBefore = await inventoryPage.hasLowStockBadge(productId);
+      expect(hasBadgeBefore).toBe(true);
+
+      // Increase stock above threshold (to "In Stock" range)
+      const adjustment = threshold * 2 - lowStockProduct.stock + 5;
+      await inventoryPage.adjustStock(productId, adjustment);
+
+      // Verify localStorage (source of truth)
+      const productAfter = await getProductFromStorage(page, productId);
+      expect(productAfter!.stock).toBeGreaterThan(threshold * 2);
+
+      // Verify UI reflects localStorage
+      const stockInUI = await inventoryPage.getStockFromUI(productId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
+
+      // Status should change to "In Stock"
+      const statusAfter = await inventoryPage.getStatusFromUI(productId);
+      expect(statusAfter).toBe('In Stock');
+
+      // Badge should no longer be visible
+      const hasBadgeAfter = await inventoryPage.hasLowStockBadge(productId);
+      expect(hasBadgeAfter).toBe(false);
+    });
+
+    test('should show Medium status for stock between threshold and 2x threshold', async ({
+      inventoryPage,
+      page,
+    }) => {
+      const firstId = await inventoryPage.getFirstProductId();
+      const productBefore = await getProductFromStorage(page, firstId);
+      expect(productBefore).toBeTruthy();
+
+      const threshold = productBefore!.lowStockThreshold;
+      // Set stock to threshold * 1.5 (middle of Medium range)
+      const targetStock = Math.floor(threshold * 1.5);
+      const adjustment = targetStock - productBefore!.stock;
+
+      // Adjust to medium range
+      await inventoryPage.adjustStock(firstId, adjustment);
+
+      // Verify localStorage (source of truth)
+      const productAfter = await getProductFromStorage(page, firstId);
+      expect(productAfter!.stock).toBe(targetStock);
+      expect(productAfter!.stock).toBeGreaterThan(threshold);
+      expect(productAfter!.stock).toBeLessThanOrEqual(threshold * 2);
+
+      // Verify UI reflects localStorage
+      const stockInUI = await inventoryPage.getStockFromUI(firstId);
+      expect(stockInUI).toBe(productAfter!.stock.toString());
+
+      // Status should be "Medium"
+      const status = await inventoryPage.getStatusFromUI(firstId);
+      expect(status).toBe('Medium');
     });
   });
 });

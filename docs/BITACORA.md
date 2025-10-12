@@ -410,10 +410,27 @@ Running 300 tests using 4 workers
 
 - **Visual tests added**: 17 tests across 5 pages
 - **Snapshots generated**: 51 (17 tests × 3 browsers)
-- **Total test count**: 317 tests (300 functional + 17 visual)
+- **Total test count**: 321 tests (304 functional + 17 visual)
 - **Docker build time**: ~2 minutes
 - **Snapshot generation time**: ~3-4 minutes
 - **maxDiffPixelRatio**: 0.03 (3% tolerance for cross-OS font rendering)
+
+### Post-Implementation Improvements
+
+**Inventory Test Suite Enhancement**
+
+- Applied dual validation pattern (localStorage + UI) to stock adjustment tests
+- Added 4 new threshold boundary tests:
+  - Stock at exact threshold
+  - Badge appears when decreasing below threshold
+  - Badge disappears when increasing above threshold
+  - Medium status for stock between threshold and 2×threshold
+- Added UI data reading methods to `InventoryPage`:
+  - `getStockFromUI()` - Read stock from table
+  - `getStatusFromUI()` - Read status badge ("Low Stock", "Medium", "In Stock")
+- **Inventory tests**: 18 → 22 tests (+4)
+- **Functional tests total**: 300 → 304 tests
+- **All tests passing**: ✅ 100% across chromium, firefox, webkit
 
 ---
 

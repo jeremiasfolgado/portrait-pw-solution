@@ -282,6 +282,55 @@ export class InventoryPage {
     return await badge.isVisible().catch(() => false);
   }
 
+  // === UI Data Reading Methods ===
+
+  /**
+   * Gets the current stock value displayed in the UI for a specific product
+   *
+   * Reads the stock value from the "Current Stock" column (column index 2)
+   *
+   * @param productId - The ID of the product
+   * @returns The stock value as displayed in the UI
+   *
+   * @example
+   * ```typescript
+   * const stock = await inventoryPage.getStockFromUI('product-123');
+   * expect(stock).toBe('50');
+   * ```
+   */
+  async getStockFromUI(productId: string): Promise<string> {
+    const row = this.getInventoryRow(productId);
+    await expect(row).toBeVisible();
+
+    const cells = row.locator('td');
+    const stock = await cells.nth(2).textContent(); // Current Stock column
+    return stock?.trim() || '';
+  }
+
+  /**
+   * Gets the status displayed in the UI for a specific product
+   *
+   * Reads the status from the "Status" column (column index 3)
+   * Possible values: "Low Stock", "Medium", "In Stock"
+   *
+   * @param productId - The ID of the product
+   * @returns The status as displayed in the UI
+   *
+   * @example
+   * ```typescript
+   * const status = await inventoryPage.getStatusFromUI('product-123');
+   * expect(status).toBe('Low Stock');
+   * ```
+   */
+  async getStatusFromUI(productId: string): Promise<string> {
+    const row = this.getInventoryRow(productId);
+    await expect(row).toBeVisible();
+
+    const cells = row.locator('td');
+    const status = await cells.nth(3).textContent(); // Status column
+    return status?.trim() || '';
+  }
+
   // === Stock Adjustment Methods ===
 
   /**
