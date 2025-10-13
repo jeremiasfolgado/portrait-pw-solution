@@ -1,335 +1,120 @@
 # QA Automation Engineer Challenge - Solution
 
 **Author:** Jeremías Folgado  
-**Date:** October 12, 2025  
+**Date:** October 13, 2025  
 **Framework:** Playwright + TypeScript  
-**Result:** 321 tests passing (100%) across chromium, firefox, and webkit
+**Result:** 119 test cases × 3 browsers = 357 total executions (100% passing)
 
 ---
 
-## ✅ Solution Complete
+## 📋 Summary
 
-> **Note:** This solution completes **all three levels** of the challenge at 100%, with 321 tests passing across all browsers, **CI/CD pipeline operational**, **4 comprehensive E2E business journeys** implemented, **data-driven testing architecture** with **dual validation pattern** (localStorage + UI), and **visual regression testing** with Docker (17 tests, 51 snapshots) for maintainable test data management.
+This solution implements all three challenge levels with 119 test cases running across 3 browsers (357 total executions). It includes CI/CD pipeline, 4 E2E journeys, data-driven architecture with dual validation (localStorage + UI), and visual regression testing with Docker.
 
-**Final Status:**
+### Implementation Status
 
-- ✅ Level 1 (Required): **100% Complete**
-- ✅ Level 2 (Intermediate): **100% Complete**
-- ✅ Level 3 (Advanced): **Substantially Complete**
-  - ✅ GitHub Actions CI/CD workflow implemented and verified
-  - ✅ 4 custom E2E business journeys demonstrating real-world scenarios
-  - ✅ Advanced fixture architecture (dual-fixture pattern)
-  - ✅ Multi-user collaboration testing
-  - ✅ Full circle validation patterns
+- ✅ Level 1 (Required): Complete
+- ✅ Level 2 (Intermediate): Complete
+- ✅ Level 3 (Advanced): Substantially Complete
 
-**Implemented (Days 5-6):**
+### Key Metrics
 
-- [x] **GitHub Actions CI/CD workflow** - 3-browser parallel matrix, automated testing on push/PR
-- [x] **Complete documentation suite** - SOLUTION.md, SELECTORS.md, CONTEXT.md, BITACORA.md
-- [x] **Production-ready pipeline** - All tests passing in CI (321/321 across 3 browsers)
-- [x] **4 E2E Business Journeys** - Real-world scenarios with multi-module integration
-- [x] **Dual-fixture architecture** - Base and authenticated fixtures for different scenarios
-- [x] **Multi-user testing** - Session management and data persistence validation
-- [x] **Data-driven testing** - 33 organized test products, fast localStorage manipulation
-- [x] **Visual regression testing** - Docker-based screenshot comparison for UI consistency (17 tests, 51 snapshots)
-
-**Potential Future Enhancements:**
-
-- [ ] Performance testing integration
-- [ ] Accessibility testing with axe-core
-- [ ] CI enhancements (test result comments on PRs, Slack notifications)
-
-**Why This Matters:**  
-The solution demonstrates production-ready test automation with CI/CD, comprehensive E2E coverage, advanced fixture patterns, and multi-user collaboration testing. All requirements are exceeded with professional-grade implementation.
+| Metric           | Value                                                          |
+| ---------------- | -------------------------------------------------------------- |
+| Test Cases       | 119 (102 functional + 17 visual)                               |
+| Total Executions | 357 (119 tests × 3 browsers)                                   |
+| Browsers         | chromium, firefox, webkit                                      |
+| POMs             | 6 (Login, Dashboard, Navbar, Products, ProductForm, Inventory) |
+| Fixtures         | 7 (5 core + 2 E2E)                                             |
+| E2E Journeys     | 4 business scenarios                                           |
+| Linter Errors    | 0                                                              |
+| Execution Time   | ~4min local, ~7min CI (2 workers per browser)                  |
 
 ---
 
 ## 📋 Table of Contents
 
-1. [Executive Summary](#executive-summary)
-2. [Testing Approach](#testing-approach)
-3. [Framework Decisions](#framework-decisions)
-4. [Project Architecture](#project-architecture)
-5. [Application Assumptions](#application-assumptions)
-6. [Execution Instructions](#execution-instructions)
-7. [Coverage Strategy](#coverage-strategy)
-8. [Challenges and Solutions](#challenges-and-solutions)
-9. [Future Improvements](#future-improvements)
-10. [Additional Documentation](#additional-documentation)
-
----
-
-## 🎯 Executive Summary
-
-### Challenge Completeness
-
-- ✅ **Level 1 (Required): 100% Complete**
-- ✅ **Level 2 (Intermediate): 100% Complete**
-- ✅ **Level 3 (Advanced): Substantially Complete** (CI/CD + 4 E2E Journeys)
-
-### Key Metrics
-
-| Metric             | Value                                                          |
-| ------------------ | -------------------------------------------------------------- |
-| Total Tests        | 321 (304 functional + 17 visual regression)                    |
-| Functional Tests   | 304 (101.33 per browser: 100 core + 4 E2E, +4 inventory)       |
-| Visual Tests       | 17 tests × 3 browsers = 51 snapshots                           |
-| Success Rate       | 100% across all browsers (local + CI)                          |
-| POMs Created       | 6 (Login, Dashboard, Navbar, Products, ProductForm, Inventory) |
-| Fixtures           | 7 (5 core + 2 E2E: base & authenticated)                       |
-| Helpers            | 5 with data-driven validation                                  |
-| E2E Journeys       | 4 business scenarios (multi-module integration)                |
-| Linter Errors      | 0                                                              |
-| Edge Case Coverage | Comprehensive (extreme numbers, boundaries)                    |
-| Validation Pattern | Dual (localStorage + UI)                                       |
-| Execution Time     | ~38s (chromium), ~2.5min (all browsers), ~3-4min (CI parallel) |
-| CI/CD Pipeline     | ✅ GitHub Actions (3-browser matrix)                           |
+1. [Testing Approach](#-testing-approach)
+2. [Technical Decisions](#-technical-decisions)
+3. [Project Architecture](#-project-architecture)
+4. [Assumptions](#-assumptions)
+5. [Execution Instructions](#-execution-instructions)
+6. [E2E Journeys (BDD Format)](#-e2e-journeys-bdd-format)
+7. [Challenges and Solutions](#-challenges-and-solutions)
+8. [Technical Stack](#-technical-stack)
+9. [Testing Strategy](#-testing-strategy)
+10. [Test Coverage](#-test-coverage)
+11. [Future Improvements](#-future-improvements)
+12. [Additional Documentation](#-additional-documentation)
+13. [Implementation Summary](#-implementation-summary)
+14. [Key Learnings](#-key-learnings)
+15. [Contact Information](#-contact-information)
 
 ---
 
 ## 🧪 Testing Approach
 
-### Fundamental Principles
+### Applied Principles
 
-#### 1. **Data-Driven Testing**
+**1. Data-Driven Testing**
 
-Instead of hardcoding expected values, all tests validate against real data from `localStorage`. This makes tests:
-
-- Independent of the dataset
-- Validate real application logic
-- Detect bugs in calculations and filters
-- More maintainable
-
-**Example:**
+Tests validate against real data from `localStorage` as source of truth instead of hardcoded values:
 
 ```typescript
-// ❌ Hardcoded (fragile)
+// ❌ Fragile
 expect(count).toBe(5);
 
-// ✅ Data-driven (robust)
+// ✅ Robust
 const expectedProducts = await getExpectedFilteredProducts(page, {
   searchTerm: 'Laptop',
 });
 expect(actualCount).toBe(expectedProducts.length);
 ```
 
-#### 2. **Strict Page Object Model (POM)**
+**2. Strict Page Object Model**
 
-**Golden Rule:** Tests should NEVER make direct DOM queries.
+All element interactions are encapsulated in Page Objects. Tests never make direct DOM queries.
 
-All element interactions are encapsulated in Page Objects:
+**3. Composition over Inheritance**
 
-```typescript
-// ❌ Pattern violation
-const firstRow = page.locator('[data-testid^="product-row-"]').first();
-
-// ✅ Correct POM usage
-const firstId = await productsPage.getFirstProductId();
-```
-
-#### 3. **Composition Over Inheritance**
-
-For shared elements (like navbar), we use composition instead of inheritance:
+For shared elements like navbar, composition is used:
 
 ```typescript
 export class ProductsPage {
   readonly navbar: NavbarPage; // Composition
-
   constructor(page: Page) {
     this.navbar = new NavbarPage(page);
   }
 }
 ```
 
-**Benefits:**
+**4. Cross-Browser from Day One**
 
-- More flexible than inheritance
-- Reusable across any page
-- TypeScript-friendly
-- Easy to test
+All tests designed for 3 browsers with `waitFor → focus → fill` pattern for webkit stability.
 
-#### 4. **Single Responsibility Principle**
+**5. Visual Regression with Docker**
 
-Each POM and test suite has a single responsibility:
-
-- `ProductsPage` → Product listing
-- `ProductFormPage` → Product forms
-- `products.spec.ts` → Listing tests
-- `product-form.spec.ts` → Form tests
-
-#### 5. **Cross-Browser First**
-
-All tests designed for 3 browsers from the start:
-
-- `waitFor → focus → fill` pattern for stability
-- Tests validated in chromium, firefox, and webkit
-- Browser-specific quirks handled
-
-#### 6. **Visual Regression Testing with Docker**
-
-Screenshot-based testing to detect unintended UI changes:
-
-- **Docker-based snapshots**: Generated on Ubuntu to match CI environment
-- **OS consistency**: Prevents macOS vs Ubuntu rendering differences (3% tolerance configured)
-- **Comprehensive coverage**: 5 pages, 17 tests, 51 snapshots (login, dashboard, inventory, products, product form)
-- **CI integration**: Automatic diff detection with artifact uploads
-- **Simple workflow**: Single command (`npm run docker:update-snapshots`)
-
-**Why Docker?** Browser rendering varies by OS (fonts, anti-aliasing). Docker ensures snapshots generated locally match those in CI (both Ubuntu).
-
-**Implementation:**
-
-```bash
-# Generate snapshots (Ubuntu environment)
-npm run docker:update-snapshots
-
-# Run visual tests locally
-npm run test:visual
-```
-
-**File organization:**
-
-```
-tests/login/
-├── login.spec.ts                    # Functional tests
-├── login.visual.spec.ts             # Visual tests
-└── login.visual.spec.ts-snapshots/
-    ├── login-initial-state-chromium-linux.png
-    ├── login-password-visible-firefox-linux.png
-    └── ... (12 total snapshots)
-```
+A Docker container was created with a Dockerfile and docker-compose that runs from a script in package.json. The purpose of this approach is to update screenshots in the same Operating System environment where tests run when executed by GitHub Actions.
 
 ---
 
-## 🔧 Framework Decisions
+## 🔧 Technical Decisions
 
-### 1. ESLint with Playwright Rules (Critical)
+### ESLint with Playwright Rules
 
-**Decision:** Install and configure `eslint-plugin-playwright` with strict rules
+Configuration of `eslint-plugin-playwright` with strict rules to automatically detect anti-patterns and maintain clean code. It also generates good context and prevents hallucinations from LLMs.
 
-**File:** `eslint.config.js`
+### TypeScript Strict Mode
 
-```javascript
-plugins: {
-  playwright,
-},
-rules: {
-  ...playwright.configs.recommended.rules,
-  'playwright/no-wait-for-timeout': 'warn',
-  'playwright/no-element-handle': 'warn',
-  'playwright/expect-expect': 'warn',
-}
-```
+Use of TypeScript with `strict: true` for compile-time errors and safe refactoring.
 
-**Reasons:**
+### Path Aliases (@/)
 
-1. **Prevents bad practices** - Detects anti-patterns automatically
-2. **Guides during development** - Linter suggests better alternatives
-3. **Prevents AI agent hallucinations** - Clear rules prevent LLM errors
-4. **Maintains clean code** - Forces correct assertions
-5. **Educational** - Learn best practices while coding
+Configuration of aliases for cleaner and more maintainable imports.
 
-**Key Rules That Saved Me:**
+### Fixtures with Auto-Authentication
 
-- `no-wait-for-timeout` → Forced me to use assertions
-- `no-conditional-expects` → Eliminated conditional logic in tests
-- `prefer-to-have-text` → Better than `textContent()`
-- `no-get-by-role-with-text` → More specific selectors
-
-**Impact:** Without these rules, I would have had fragile, unmaintainable tests.
-
-### 2. Playwright MCP (Development Tool)
-
-**Decision:** Use Model Context Protocol (MCP) for Playwright during development
-
-**Benefits during development:**
-
-1. **UI Exploration** - Visual inspection of selectors
-2. **Selector Generation** - MCP suggests best selectors
-3. **Interactive Testing** - Try interactions before coding
-4. **Screenshot Debugging** - Capture visual state on failure
-5. **Development Acceleration** - Less trial & error
-
-**How I Used It:**
-
-- Initial page exploration to identify data-testids
-- Complex interaction validation (modals, toggles)
-- Cross-browser debugging
-- Expected behavior documentation
-
-**Note:** MCP was especially useful for understanding:
-
-- Error format differences in forms (new vs edit)
-- Modal behavior on validation
-- Mixed content structure (label + value)
-
-### 3. TypeScript Strict Mode
-
-**Decision:** Use TypeScript with strict configuration
-
-**Configuration:**
-
-```json
-{
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true
-  }
-}
-```
-
-**Benefits:**
-
-- Errors caught at compile time
-- Robust autocomplete
-- Safe refactoring
-- Implicit documentation through types
-
-### 4. Path Aliases (@/)
-
-**Decision:** Use path aliases for clean imports
-
-**Configuration:**
-
-```json
-{
-  "paths": {
-    "@/*": ["./*"]
-  }
-}
-```
-
-**Before vs After:**
-
-```typescript
-// ❌ Without alias
-import { LoginPage } from '../../../pages/login.page';
-
-// ✅ With alias
-import { LoginPage } from '@/pages/login.page';
-```
-
-### 5. Fixtures with Auto-Authentication
-
-**Decision:** Fixtures that automate login instead of beforeEach
-
-**Advantages:**
-
-- Cleaner tests
-- No duplicated login code
-- Automatic isolation
-- Easy credential changes
-
-**Example:**
-
-```typescript
-test('should display dashboard', async ({ dashboardPage }) => {
-  // Already authenticated and on the page!
-  const userName = await dashboardPage.navbar.getUserName();
-  expect(userName).toBe('Admin User');
-});
-```
+Fixtures that automate login, eliminating duplicate code in tests.
 
 ---
 
@@ -339,179 +124,54 @@ test('should display dashboard', async ({ dashboardPage }) => {
 
 ```
 portrait-pw-solution/
-├── pages/                      # Page Object Models
-│   ├── login.page.ts          # Login page (217 lines)
-│   ├── dashboard.page.ts      # Dashboard with stats (153 lines)
-│   ├── navbar.page.ts         # Reusable component (166 lines)
-│   ├── products.page.ts       # Product listing (401 lines)
-│   ├── product-form.page.ts   # Form new/edit (336 lines)
-│   └── inventory.page.ts      # Inventory management (404 lines)
+├── pages/                      # Page Object Models (6 POMs)
+│   ├── login.page.ts          # 217 lines
+│   ├── dashboard.page.ts      # 153 lines
+│   ├── navbar.page.ts         # 166 lines (reusable component)
+│   ├── products.page.ts       # 401 lines
+│   ├── product-form.page.ts   # 336 lines
+│   └── inventory.page.ts      # 404 lines
 │
-├── fixtures/                   # Fixtures with auto-auth
-│   ├── login/login.fixture.ts
-│   ├── dashboard/dashboard.fixture.ts
-│   ├── products/products.fixture.ts
-│   ├── products/product-form.fixture.ts
-│   └── inventory/inventory.fixture.ts
-│
+├── fixtures/                   # 7 fixtures with auto-auth
 ├── tests/                      # Test suites
-│   ├── login/login.spec.ts            # 12 tests
-│   ├── dashboard/dashboard.spec.ts    # 6 tests
-│   ├── products/products.spec.ts      # 12 tests (listing)
-│   ├── products/product-form.spec.ts  # 12 tests (forms)
-│   ├── inventory/inventory.spec.ts    # 18 tests
-│   └── helpers/
-│       ├── storage-helpers.ts    # ⭐ Single source of truth
-│       ├── dashboard-helpers.ts  # Dashboard calculations
-│       ├── products-helpers.ts   # Filters and sort
-│       ├── inventory-helpers.ts  # Stock adjustments
-│       └── test-helpers.ts       # General utilities
+│   ├── login/                 # 12 tests
+│   ├── dashboard/             # 6 tests
+│   ├── products/              # 78 + 81 = 159 tests
+│   ├── inventory/             # 22 tests
+│   ├── e2e/                   # 4 journeys
+│   └── helpers/               # 5 centralized helpers
 │
-├── types/
-│   └── product.types.ts       # Centralized types (Omit, Partial)
-│
-└── docs/
-    ├── BITACORA.md            # Detailed work log (2000+ lines)
-    ├── PLAYWRIGHT_CONTEXT.md  # Framework agreements
-    └── SELECTORS.md           # Complete selectors catalog
+├── types/                      # Centralized types with utility types
+└── docs/                       # Documentation (BITACORA, SELECTORS, CONTEXT)
 ```
 
-### Design Patterns Applied
+### Applied Patterns
 
-#### 1. **Composition Pattern (NavbarPage)**
+**Composition (NavbarPage):** Reusable navbar component across all authenticated pages.
 
-The navbar appears on all authenticated pages. Instead of duplicating code, we use composition:
+**DRY in Helpers:** `storage-helpers.ts` as single source of truth, generating necessary methods to write and read the KEY where products are stored, then each helper has its own responsibility.
 
-```typescript
-export class DashboardPage {
-  readonly navbar: NavbarPage; // Shared component
+**TypeScript Utility Types:** Derived types using `Omit` and `Partial` to avoid duplication.
 
-  constructor(page: Page) {
-    this.navbar = new NavbarPage(page);
-    // Only dashboard-specific elements here
-  }
-}
-```
-
-**Usage in tests:**
-
-```typescript
-await dashboardPage.navbar.navigateToProducts();
-await dashboardPage.navbar.logout();
-```
-
-#### 2. **Re-export Pattern (DRY in Helpers)**
-
-To centralize localStorage without breaking existing tests:
-
-```typescript
-// storage-helpers.ts - Single implementation
-export async function getProductsFromLocalStorage(page: Page) { ... }
-
-// dashboard-helpers.ts - Re-exports
-export { getProductsFromLocalStorage } from './storage-helpers';
-```
-
-**Benefit:** Backward compatible, no test changes needed.
-
-#### 3. **TypeScript Utility Types**
-
-Avoid type duplication using transformations:
-
-```typescript
-// Base type
-interface Product { id, sku, name, ... }
-
-// Derived type (without auto-generated fields)
-type ProductCreateInput = Omit<Product, 'id' | 'createdAt' | 'updatedAt'> & {
-  description?: string;
-}
-
-// Partial updates
-type ProductUpdateInput = Partial<ProductCreateInput>
-```
-
-**Advantage:** One base type, multiple derivations without duplication.
-
-#### 4. **Fixture Parameterization (Role Detection)**
-
-Instead of creating separate fixtures for admin and user:
-
-```typescript
-// Detect role from test title
-const isAdmin = testInfo.title.toLowerCase().includes('admin');
-const role = isAdmin ? 'admin' : 'user';
-
-// Authenticate with appropriate credentials
-const credentials = CREDENTIALS[role];
-await loginPage.login(credentials.email, credentials.password);
-```
-
-**Test:**
-
-```typescript
-test('should display correct name for admin user', async ({
-  dashboardPage,
-}) => {
-  // Automatically uses admin credentials
-  const userName = await dashboardPage.navbar.getUserName();
-  expect(userName).toBe('Admin User');
-});
-```
+**Parameterized Fixture:** Automatic role detection (admin/user) based on test title.
 
 ---
 
-## 🔍 Application Assumptions
+## 🔍 Assumptions
 
 ### Functional Behavior
 
-1. **Dashboard identical for both roles**
-
-   - Admin and Regular User see the same statistics
-   - Only difference: displayed username
-   - Same navigation permissions
-
-2. **Client-side validation in forms**
-
-   - HTML5 validation runs before app validation
-   - Browsers have different validation messages
-   - Required fields prevent form submission
-
-3. **localStorage as source of truth**
-
-   - All data persisted in `localStorage`
-   - Key: `qa_challenge_products`
-   - Stats and filters calculated from this source
-
-4. **Modals remain open on validation error**
-
-   - When validation fails, modal stays open
-   - User must correct or cancel manually
-   - Correct UX behavior
-
-5. **Stock cannot be negative**
-   - Validation: `product.stock + adjustment >= 0`
-   - Error: "Stock cannot be negative"
-   - Prevents submission
+1. Identical dashboard for admin and regular user (only displayed name changes)
+2. Client-side validation in forms (HTML5 + app)
+3. localStorage as source of truth (`qa_challenge_products`)
+4. Modals remain open on validation error
+5. Stock cannot be negative
 
 ### Technical Behavior
 
-6. **Data-testids available**
-
-   - Most elements have `data-testid`
-   - Inconsistency: new form vs edit form
-   - Priority: data-testid > role > text > CSS
-
-7. **Cross-browser differences**
-
-   - Webkit requires `waitFor` before `fill()`
-   - Validation messages vary by browser
-   - Input type="number" doesn't accept text
-
-8. **Permanent test accounts**
-   - `admin@test.com` / `Admin123!`
-   - `user@test.com` / `User123!`
-   - Credentials don't change between runs
+6. Data-testids available (with inconsistencies between new/edit form)
+7. Webkit requires `waitFor` before `fill()`
+8. Permanent test accounts (`admin@test.com` / `user@test.com`)
 
 ---
 
@@ -520,872 +180,257 @@ test('should display correct name for admin user', async ({
 ### Initial Setup
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Install Playwright browsers
 npx playwright install
-
-# 3. Start the application (in separate terminal)
-npm run dev
-# App runs at http://localhost:3456
+npm run dev  # In separate terminal, runs on http://localhost:3456
 ```
 
 ### Running Tests
 
 ```bash
-# All tests on all browsers
+# All tests
 npm test
 
-# Only chromium (faster for development)
+# Chromium only
 npm test -- --project=chromium
 
 # Specific module
 npm test -- tests/login/
-npm test -- tests/dashboard/
 npm test -- tests/products/
-npm test -- tests/inventory/
 
-# UI mode (interactive debugging)
+# UI mode (interactive)
 npm run test:ui
 
-# Headed mode (watch browser)
-npm run test:headed
-
-# Debug mode (step by step)
-npm run test:debug
-
-# View HTML report
-npx playwright show-report
+# Visual tests
+npm run test:visual # Runs visual tests using screenshots for local OS
+npm run test:visual:update # Updates screenshots for local OS
+npm run docker:update-snapshots  # Update snapshots (Ubuntu)
 ```
 
 ### CI/CD Pipeline
 
-**GitHub Actions** automatically runs tests on every push and pull request:
+GitHub Actions runs automatically on push/PR:
 
-```yaml
-Workflow: .github/workflows/playwright.yml
-Trigger: push/PR to main/master
-Strategy: 3-browser parallel matrix (chromium, firefox, webkit)
-Execution Time: ~3-4 minutes (parallel)
-Reports: Uploaded as artifacts (30-day retention)
-Traces: Uploaded on failure (debugging)
-```
+- Parallel 3-browser matrix
+- 2 workers per browser for optimal performance
+- Time: ~7 minutes (optimized from ~15 minutes)
+- Artifacts: HTML reports, traces, visual diffs
 
-**To view CI results:**
+View results: **Actions tab → Download artifacts → `npx playwright show-report`**
 
-1. Go to your GitHub repository
-2. Click on the **Actions** tab
-3. View the latest workflow run
-4. Download artifacts:
-   - `playwright-report-chromium`
-   - `playwright-report-firefox`
-   - `playwright-report-webkit`
-5. Extract and serve locally: `npx playwright show-report <report-folder>`
-
-**Reference:** Implementation based on [Playwright official documentation](https://playwright.dev/docs/ci-intro#setting-up-github-actions)
-
-### Linting Commands
-
-```bash
-# Check linter
-npm run lint
-
-# Auto-fix errors
-npm run lint:fix
-```
-
-### Useful Scripts
-
-```bash
-# Functional tests (exclude visual)
-npm run test:functional
-
-# Only visual tests
-npm run test:visual
-
-# Update visual snapshots
-npm run test:visual:update
-```
+Reference: [Official Playwright CI Documentation](https://playwright.dev/docs/ci-intro#setting-up-github-actions)
 
 ---
 
-## 📊 Coverage Strategy
-
-### Test Prioritization
-
-#### **Tier 1: Critical Path (Level 1 Required)**
-
-- ✅ Authentication (login/logout/session)
-- ✅ Product creation
-- ✅ Form validation
-- ✅ Product search
-- ✅ Product deletion
-
-**Coverage:** 100% (all implemented)
-
-#### **Tier 2: Core Features (Level 2 Intermediate)**
-
-- ✅ Dashboard with calculated stats
-- ✅ Filters and sorting
-- ✅ Inventory management (stock adjustments)
-- ✅ Low stock alerts
-- ✅ Constraint validation
-
-**Coverage:** 100% (all implemented)
-
-#### **Tier 3: Edge Cases & Advanced**
-
-- ✅ Extremely large/small numbers
-- ✅ Consecutive adjustments
-- ✅ Different input methods (keyboard, fill, clear)
-- ✅ Boundary validation (zero, negative)
-- 🟡 E2E journeys (example exists)
-
-**Coverage:** ~80% (edge cases complete, needs more custom E2E)
-
-### Test Distribution by Module
-
-```
-Login (36 tests - 20%):
-├─ Rendering (3 tests)
-├─ Authentication (12 tests)
-├─ Password Toggle (12 tests)
-└─ Validation (9 tests)
-
-Dashboard (18 tests - 10%):
-├─ User Info (6 tests)
-├─ Stats Validation (6 tests)
-└─ Navigation (6 tests)
-
-Products (72 tests - 40%):
-├─ List Navigation (6 tests)
-├─ Search & Filter (15 tests)
-├─ Sort (9 tests)
-├─ Deletion (6 tests)
-├─ Form Creation (9 tests)
-├─ Form Validation (24 tests)
-└─ Form Navigation (3 tests)
-
-Inventory (54 tests - 30%):
-├─ Rendering (6 tests)
-├─ Low Stock Alerts (6 tests)
-├─ Stock Increase (9 tests)
-├─ Stock Decrease (6 tests)
-├─ Validation (12 tests)
-├─ Modal (6 tests)
-├─ Input Methods (9 tests)
-└─ Alert Updates (3 tests)
-
-Total: 180 tests
-```
-
-### Types of Tests Implemented
-
-#### 1. **Functional Tests (100%)**
-
-- Complete workflow validation
-- User interactions
-- Page navigation
-- CRUD operations
-
-#### 2. **Validation Tests (100%)**
-
-- Required fields
-- Invalid values (negative, zero)
-- Incorrect formats
-- Business constraints
-
-#### 3. **Edge Case Tests (100%)**
-
-- Extreme numbers (±999,999)
-- Exact boundaries (reduce to zero)
-- Empty inputs
-- Consecutive adjustments
-
-#### 4. **Cross-Browser Tests (100%)**
-
-- All tests run on 3 browsers
-- Browser-specific quirks handled
-- 100% stability
-
-#### 5. **Data-Driven Tests (100%)**
-
-- Validation against localStorage
-- Helpers replicating app logic
-- No hardcoded values
-
----
-
-## 🌐 E2E Business Journeys (Level 3)
-
-### Overview
-
-Implemented 4 comprehensive end-to-end journeys that demonstrate real-world business scenarios spanning multiple modules. Each journey validates complete workflows from start to finish.
+## 🌐 E2E Journeys (BDD Format)
 
 ### Journey 1: Complete Product Lifecycle with Full Circle Validation
 
-**Business Scenario:**  
-Manager creates a product, adjusts inventory, validates dashboard impact, deletes the product, and verifies the system returns to its initial state.
+**Scenario:** As a user, I want to create a product, adjust its inventory, then delete it verifying the system returns to its initial state.
 
-**Flow:**
+**Given** the dashboard shows initial system statistics  
+**When** I create a new product with valid data  
+**And** I adjust the product stock in the inventory module  
+**And** I verify that dashboard statistics reflect the changes  
+**And** I delete the product from the listing  
+**Then** the product is not visible in the listing  
+**And** the dashboard statistics return to the initial state (full circle validation)
 
-1. Capture initial dashboard stats
-2. Create new product via form
-3. Verify product appears in products list
-4. Navigate to inventory and adjust stock level
-5. Verify dashboard stats reflect the changes
-6. Delete the product from products list
-7. Verify product no longer visible
-8. **Verify dashboard stats returned to initial state** ← Full Circle Validation
+**Key validation:** Data integrity, multi-module consistency, initial state === final state
 
-**Key Validations:**
+---
 
-- ✅ Data integrity throughout entire lifecycle
-- ✅ Multi-module consistency (Form → Products → Inventory → Dashboard)
-- ✅ Full circle validation (initial state === final state)
-- ✅ Cleanup verification
+### Journey 2: Form Error Recovery
 
-**Value:** Demonstrates understanding of complete data flow and system integrity.
+**Scenario:** As a user, I want to attempt creating a product with invalid data and progressively correct errors until successful creation.
 
-### Journey 2: Form Validation and Error Recovery
+**Given** I am on the new product form  
+**When** I attempt to submit the empty form  
+**Then** I see all validation messages for required fields  
+**When** I fill only SKU and name  
+**Then** some error messages disappear but others persist  
+**When** I enter invalid values (negative price/stock)  
+**Then** validation prevents form submission  
+**When** I correct all fields with valid values  
+**And** I submit the form  
+**Then** the product is created successfully  
+**And** I can verify its existence in the listing
 
-**Business Scenario:**  
-User attempts to create a product with multiple validation errors, progressively corrects them, and successfully completes the creation.
+**Key validation:** Error recovery UX, precise validations, form resilience
 
-**Flow:**
+---
 
-1. Submit empty form → All validation errors appear
-2. Fill only SKU and Name → Some errors persist, others cleared
-3. Fill with invalid values (negative price/stock) → Validation prevents submission
-4. Complete all fields correctly → Successful creation
-5. Verify product was created successfully
-6. Clean up (delete product and verify)
+### Journey 3: Search, Filter and Dual Deletion Validation
 
-**Key Validations:**
+**Scenario:** As a user, I want to create diverse products, use filters to find them, and delete them with complete verification.
 
-- ✅ Progressive error correction UX
-- ✅ Form validation resilience
-- ✅ User can recover from errors
-- ✅ Validation messages accurate
+**Given** the system has existing products  
+**When** I create 3 products with different categories (Electronics, Accessories)  
+**Then** the products appear in the listing  
+**When** I search by keyword "Laptop"  
+**Then** I only see products matching the search  
+**When** I filter by category "Electronics"  
+**Then** I only see products from that category  
+**When** I combine search "Premium" + filter "Accessories"  
+**Then** I see only products meeting both conditions  
+**When** I delete all test products  
+**Then** they don't appear in the listing (UI validation)  
+**And** they don't exist in localStorage (data validation)
 
-**Value:** Demonstrates UX understanding and user journey resilience.
+**Key validation:** Functional search, precise filtering, filter combination, dual validation (UI + localStorage)
 
-### Journey 3: Search and Filter Discovery with Deletion Validation
-
-**Business Scenario:**  
-User creates multiple products, uses search and filters to discover them, then deletes all test products with complete verification.
-
-**Flow:**
-
-1. Create 3 diverse products (different categories: Electronics, Accessories)
-2. Search by keyword "Laptop" → Validate filtered results
-3. Filter by category "Electronics" → Validate category results
-4. Combine search "Premium" + filter "Accessories" → Validate intersection
-5. Reset to show all products → Validate complete list
-6. Delete all test products
-7. **Verify deletion in UI** (search by SKU returns 0)
-8. **Verify deletion in localStorage** (IDs not present)
-
-**Key Validations:**
-
-- ✅ Search functionality correctness
-- ✅ Category filtering accuracy
-- ✅ Filter combination logic
-- ✅ Double validation (UI + data layer)
-
-**Value:** Demonstrates discovery workflows and thorough validation patterns.
+---
 
 ### Journey 4: Multi-User Collaboration
 
-**Business Scenario:**  
-Admin creates a product and verifies impact. Logs out. Regular user logs in, finds the admin's product, adjusts inventory, deletes it, and validates the complete cycle.
+**Scenario:** As a multi-user system, I want changes from one user to persist for another user in different sessions.
 
-**Flow:**
+**Given** an admin is authenticated in the system  
+**And** the dashboard shows initial statistics  
+**When** the admin creates a new product  
+**Then** the product appears in the listing  
+**And** the dashboard statistics increase  
+**When** the admin logs out  
+**And** a regular user logs in  
+**Then** they can see the product created by the admin (persistence)  
+**When** the user adjusts the product stock  
+**Then** the dashboard reflects the update  
+**When** the user deletes the product  
+**Then** the product disappears from the system  
+**And** the statistics return to the admin's initial state
 
-**Admin Session:**
-
-1. Login as admin
-2. Capture initial dashboard stats
-3. Create new product
-4. Verify product in products list
-5. Verify dashboard stats increased
-6. Logout
-
-**Regular User Session:** 7. Login as regular user (verify username) 8. Find product created by admin (persistence validation) 9. Adjust inventory stock level 10. Verify dashboard reflects adjustment 11. Delete the product 12. **Verify dashboard returned to admin's initial state**
-
-**Key Validations:**
-
-- ✅ Data persistence across sessions
-- ✅ Multi-user collaboration capability
-- ✅ Session management (logout/login)
-- ✅ Role-based workflows (Admin vs User)
-- ✅ Full circle validation across users
-
-**Value:** Demonstrates understanding of multi-user systems and data persistence.
+**Key validation:** Data persistence across sessions, session management, multi-user collaboration, different roles
 
 ### Dual-Fixture Architecture
 
-To support different authentication needs, created a two-tier fixture system:
+**e2eBaseFixture:** Without auto-auth, for multi-user scenarios with manual login/logout control.
 
-**e2eBaseFixture (No Auto-Auth):**
+**e2eFixture:** With auto-auth as admin, for standard journeys.
 
-```typescript
-// Provides all pages pre-instantiated WITHOUT auto-authentication
-// Use for: Multi-user scenarios, custom session management
+### Organization in Separate Files
 
-e2eBaseFixture.describe('Multi-User Journeys', () => {
-  const test = e2eBaseFixture;
+Each journey in its own file for:
 
-  test('journey', async ({ loginPage, productsPage, ... }) => {
-    // Manual login/logout control
-  });
-});
-```
+- Better isolation (separate workers)
+- Avoid race conditions
+- Simpler debugging
 
-**e2eFixture (With Auto-Auth):**
+### Extended Timeouts (60s)
 
-```typescript
-// Extends base fixture + auto-authenticates as admin
-// Use for: Standard journeys, no session switching needed
+E2E journeys require 60s timeout due to:
 
-e2eFixture.describe('Standard Journeys', () => {
-  const test = e2eFixture;
-
-  test('journey', async ({ productsPage, inventoryPage, ... }) => {
-    // Already authenticated as admin
-  });
-});
-```
-
-**Benefits:**
-
-- ✅ Zero page instantiation in tests
-- ✅ Appropriate fixture for each scenario
-- ✅ Code reuse (authenticated extends base)
-- ✅ Dependency injection pattern
-
-### File Organization
-
-E2E journeys are organized in **separate files** for better isolation:
-
-```
-tests/e2e/
-├── product-lifecycle.spec.ts (151 lines)
-│   └─ Journey 1: Complete lifecycle with full circle validation
-├── form-validation-recovery.spec.ts (108 lines)
-│   └─ Journey 2: Error recovery workflow
-├── search-and-filter.spec.ts (142 lines)
-│   └─ Journey 3: Search & filter with deletion validation
-└── multi-user-collaboration.spec.ts (189 lines)
-    └─ Journey 4: Multi-user collaboration (Admin → User)
-```
-
-**Why Separate Files:**
-
-- ✅ **Better isolation** - Each file runs in different worker
-- ✅ **Easier debugging** - One journey per file
-- ✅ **Avoids race conditions** - No shared state conflicts
-- ✅ **Follows project pattern** - Similar to login/, dashboard/, products/
-- ✅ **No config changes** - Respects README parallelism settings
-
-### Extended Timeouts for E2E
-
-E2E journeys require **60-second timeouts** (vs 30s default) due to:
-
-**Complexity factors:**
-
-- Multiple page navigations (products → inventory → dashboard)
+- Multiple page navigations
 - 6-12 steps per journey
-- Dashboard stats async recalculation
-- Multi-user scenarios (2 login sessions in Journey 4)
-- expect.poll() waiting for state updates
-
-**Implementation:**
-
-```typescript
-test.describe('E2E Journey - ...', () => {
-  // Extended timeout allows all assertions to complete
-  test.setTimeout(60000);
-
-  test('journey name', async ({ ... }) => {
-    // Complex multi-step workflow
-  });
-});
-```
-
-**Results:**
-
-- ✅ Eliminated timeouts in Firefox/Webkit
-- ✅ 100% cross-browser stability
-- ✅ All async validations complete successfully
-
-### Technical Patterns in E2E
-
-**1. test.step() for Readable Reports:**
-
-```typescript
-await test.step('Admin creates new product', async () => {
-  await productFormPage.gotoNew();
-  await productFormPage.createProduct(testProduct);
-});
-```
-
-**2. expect.poll() for Async Validations:**
-
-```typescript
-// Wait for dashboard stats to update (async recalculation)
-await expect
-  .poll(async () => await dashboardPage.getTotalProducts(), {
-    timeout: 5000,
-  })
-  .toBe(expectedTotal);
-```
-
-**3. Full Circle Validation:**
-
-```typescript
-// Capture before
-const initialStats = await getExpectedStatsFromStorage(page);
-
-// Perform operations...
-
-// Verify after
-const finalStats = await getExpectedStatsFromStorage(page);
-expect(finalStats.totalProducts).toBe(initialStats.totalProducts);
-```
-
-**4. Double Validation (UI + Data):**
-
-```typescript
-// UI layer
-await productsPage.searchProducts(sku);
-expect(count).toBe(0);
-
-// Data layer
-const products = await getProductsFromLocalStorage(page);
-const exists = products.some((p) => p.id === deletedId);
-expect(exists).toBe(false);
-```
+- Asynchronous dashboard recalculation
+- Multi-user scenarios
 
 ---
 
 ## 💡 Challenges and Solutions
 
-### Challenge 1: Webkit Input Flakiness 🔴 CRITICAL
+### 1. Webkit Input Flakiness
 
-**Problem:** In webkit, email field wouldn't fill randomly (~90% success rate).
+**Problem:** Email field didn't fill consistently in webkit (~90% success rate).
 
-**Symptoms:**
-
-- Input visible but empty after `fill()`
-- Test fails with "Invalid credentials"
-- Not consistently reproducible
-
-**Debugging:**
-
-1. Screenshots showed input visible but empty
-2. Tried `click()` before `fill()` - didn't work
-3. Tried only `focus()` - improved but not 100%
-4. Research: webkit is stricter with timing
-
-**Final Solution:**
+**Solution:** Three-step pattern:
 
 ```typescript
-async login(email: string, password: string) {
-  // Three-step pattern for maximum stability
-  await this.emailInput.waitFor({ state: 'visible' });
-  await this.emailInput.focus();
-  await this.emailInput.fill(email);
-
-  await this.passwordInput.waitFor({ state: 'visible' });
-  await this.passwordInput.focus();
-  await this.passwordInput.fill(password);
-
-  await this.loginButton.click();
-}
+await this.emailInput.waitFor({ state: 'visible' });
+await this.emailInput.focus();
+await this.emailInput.fill(email);
 ```
 
-**Result:** 100% webkit stability (180/180 tests)
+**Result:** 100% webkit stability.
 
-**Lesson:** For critical fields, always wait for visibility explicitly.
-
-### Challenge 2: localStorage Helper Duplication 🟡 MEDIUM
+### 2. localStorage Helper Duplication
 
 **Problem:** `getProductsFromLocalStorage()` duplicated in 3 files (~110 lines).
 
-**Recognition:** During code review noticed same code in:
+**Solution:** Create centralized `storage-helpers.ts` with re-exports in other helpers for backward compatibility.
 
-- `dashboard-helpers.ts`
-- `products-helpers.ts`
-- `inventory-helpers.ts`
+### 3. Inconsistent Error Formats
 
-**Solution:**
+**Problem:** New/edit forms have different error structures.
 
-1. Create `storage-helpers.ts` as single source of truth
-2. Move all storage operations there
-3. Have other helpers import and re-export
-4. Verify tests don't break (backward compatible)
+**Solution:** Implement dual-fallback that tries both formats.
 
-**Code:**
-
-```typescript
-// storage-helpers.ts
-export async function getProductsFromLocalStorage(page: Page) { ... }
-
-// dashboard-helpers.ts (and others)
-import { getProductsFromLocalStorage } from './storage-helpers';
-export { getProductsFromLocalStorage }; // Re-export
-```
-
-**Impact:**
-
-- ✅ 110 lines eliminated
-- ✅ Single place for changes
-- ✅ Tests work without modifications
-
-**Lesson:** Apply DRY aggressively, even in helpers.
-
-### Challenge 3: Inconsistent Form Error Formats 🟡 MEDIUM
-
-**Problem:** "new" and "edit" forms have different error structures.
-
-**Discovery:**
-
-- **New form:** Errors without `data-testid`, use CSS class
-- **Edit form:** Errors with `data-testid`
-
-**Solution:** Dual-fallback approach
-
-```typescript
-async getFieldError(field: string): Promise<string> {
-  // Try edit format first
-  const errorWithTestId = this.page.getByTestId(`${field}-error`);
-  if (await errorWithTestId.isVisible().catch(() => false)) {
-    return await errorWithTestId.textContent() || '';
-  }
-
-  // Fallback to new format
-  const errorLocator = inputLocator.locator('..').locator('p.text-red-500');
-  if (await errorLocator.isVisible().catch(() => false)) {
-    return await errorLocator.textContent() || '';
-  }
-
-  return '';
-}
-```
-
-**Result:** Same POM works for both forms.
-
-**Lesson:** Always have fallbacks for UI inconsistencies.
-
-### Challenge 4: Conditionals in Tests (Linter) 🟢 LOW
+### 4. Conditionals in Tests
 
 **Problem:** 21 linter warnings for conditionals in tests.
 
-**Example of the problem:**
-
-```typescript
-// ❌ Conditional in test
-if (filteredCount === 0) {
-  await expect(noProductsMessage).toBeVisible();
-} else {
-  expect(filteredCount).toBeLessThan(totalCount);
-}
-```
-
-**Solution:** Assertions without conditionals
-
-```typescript
-// ✅ No conditional
-const expectedProducts = await getExpectedFilteredProducts(page, {
-  searchTerm: 'Laptop',
-});
-expect(actualCount).toBe(expectedProducts.length);
-```
-
-**Result:** 21 warnings → 0 errors
-
-**Lesson:** Linter forces more robust tests.
-
-### Challenge 5: Mixed Content in Stats 🟢 LOW
-
-**Problem:** Stats cards show "Total Products5" (label + value together).
-
-**Discovery:** No separation of label and value in DOM.
-
-**Solution:** Regex for extraction
-
-```typescript
-async getTotalProducts(): Promise<number> {
-  const text = await this.statTotalProducts.textContent();
-  // Extract number from "Total Products5"
-  const match = text?.match(/\d+/);
-  return match ? parseInt(match[0], 10) : 0;
-}
-```
-
-**Lesson:** When DOM mixes content, use regex.
+**Solution:** Remove conditionals using data-driven helpers that calculate expected values.
 
 ---
 
-## 🎓 Technical Challenges Resolved
+## 🛠️ Technical Stack
 
-### 1. Cross-Browser Compatibility
+**Core:**
 
-**Challenge:** Tests passed in chromium but failed in webkit/firefox
+- Playwright 1.42.0
+- TypeScript 5.0 (strict mode)
+- Node.js 20+
 
-**Implemented solutions:**
+**Tools:**
 
-- `waitFor → focus → fill` pattern on all inputs
-- Browser-specific validation for HTML5 messages
-- `blur()` before click on elements that may intercept
+- ESLint 9.37 + eslint-plugin-playwright
+- Docker (for visual regression)
+- GitHub Actions (CI/CD)
 
-**Result:** 100% stability across 3 browsers
+**Testing:**
 
-### 2. Data-Driven Validation
-
-**Challenge:** Avoid hardcoding expected values
-
-**Solution:** Helpers that replicate app logic
-
-```typescript
-// Replicates application's filter
-export function filterProductsBySearch(
-  products: Product[],
-  searchTerm: string
-) {
-  const lowerSearch = searchTerm.toLowerCase();
-  return products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(lowerSearch) ||
-      p.sku.toLowerCase().includes(lowerSearch)
-  );
-}
-```
-
-**Benefit:** Tests validate real logic, not assumptions.
-
-### 3. Strict POM Adherence
-
-**Challenge:** Keep tests completely free of DOM queries
-
-**Enforcement:**
-
-- Code review after each suite
-- Move queries to POM methods
-- Create helpers when necessary
-
-**Example:**
-
-```typescript
-// Before: Direct query in test
-const firstRow = page.locator('[data-testid^="product-row-"]').first();
-
-// After: POM method
-async getFirstProductId(): Promise<string> {
-  const firstRow = this.getFirstProductRow();
-  return await this.getProductIdFromRow(firstRow);
-}
-
-// Clean test
-const id = await productsPage.getFirstProductId();
-```
+- 3 browsers (chromium, firefox, webkit)
+- 4 parallel workers
+- Path aliases (@/)
+- Fixtures for auto-auth
 
 ---
 
-## 🛠️ Tools and Technologies
+## 📊 Testing Strategy
 
-### Core Stack
+### Test Pyramid
 
-- **Playwright 1.42.0** - Testing framework
-- **TypeScript 5.0** - Language (strict mode)
-- **Next.js 15** - Application under test
-- **Node.js 20+** - Runtime
+```
+     /\
+    /  \  E2E (4 journeys)
+   /    \
+  / Integration (Features)
+ /        \
+/ Unit Tests (Components)
+```
 
-### Development Tools
+### AAA Pattern (Arrange-Act-Assert)
 
-- **ESLint 9.37** with `eslint-plugin-playwright` 2.2.2
-- **TypeScript ESLint** 8.46.0
-- **MCP Playwright** - For UI exploration
-- **VS Code** - Primary IDE
+All tests follow clear structure of setup, action, and validation.
 
-### Testing Features
+### Test Independence
 
-- **3 browsers:** chromium, firefox, webkit
-- **Parallel execution:** 4 workers
-- **Fixtures** for auto-auth
-- **Helpers** for data-driven validation
-- **Path aliases** (@/) for clean imports
+Each test is independent thanks to fixtures that create clean state.
+
+### Descriptive Names
+
+Pattern: `should + action + context`
 
 ---
 
-## 📈 Testing Strategy Adopted
+## 📈 Test Coverage
 
-### 1. Test Pyramid Approach
+### Distribution by Module
 
-```
-         /\
-        /  \  E2E (Few, critical)
-       /    \
-      / Integration (Moderate)
-     /        \
-    / Unit Tests (Many, fast)
-   /____________\
-```
+- Login: 12 tests (auth, toggle, validation)
+- Dashboard: 6 tests (stats, navigation, roles)
+- Products: 159 tests (listing, forms, CRUD, validation)
+- Inventory: 22 tests (stock, alerts, boundaries)
+- E2E: 4 journeys
+- Visual: 17 tests (51 snapshots)
 
-**In this project:**
+### Test Types
 
-- **Base:** Individual component tests (login, forms)
-- **Middle:** Feature tests (products, inventory)
-- **Top:** E2E journeys (complete lifecycle)
-
-### 2. AAA Pattern (Arrange-Act-Assert)
-
-All tests follow clear structure:
-
-```typescript
-test('should create a new product', async ({ productFormPage }) => {
-  // Arrange - Setup test data
-  const productData = {
-    sku: 'TEST-001',
-    name: 'Test Product',
-    category: 'Electronics',
-    price: 99.99,
-    stock: 50,
-  };
-
-  // Act - Perform action
-  await productFormPage.createProduct(productData);
-
-  // Assert - Validate result
-  await expect(page).toHaveURL('/products');
-});
-```
-
-### 3. Test Independence
-
-- Each test is independent
-- Fixtures create clean state
-- No dependencies between tests
-- Can run in parallel
-
-### 4. Descriptive Test Names
-
-Test names follow pattern `should + action + context`:
-
-```typescript
-test('should prevent stock from going negative');
-test('should display low stock badge on products below threshold');
-test('should handle extremely large numbers (edge case)');
-```
-
----
-
-## 🎯 Key Design Decisions
-
-### Why Separate ProductsPage and ProductFormPage
-
-**Original Problem:** Single 609-line POM with everything mixed.
-
-**Decision:** Separate into two POMs by responsibility.
-
-**Result:**
-
-- `ProductsPage` (401 lines) - Listing, filters, deletion
-- `ProductFormPage` (336 lines) - Forms new/edit, validation
-
-**Benefits:**
-
-- Tests organized by functionality
-- Easier to find and maintain code
-- More focused POMs
-- Independent test suites
-
-### Why Create Composable NavbarPage
-
-**Observation:** Identical navbar across all authenticated pages.
-
-**Alternatives considered:**
-
-1. ❌ Duplicate elements in each POM
-2. ❌ Inheritance (AuthenticatedPage base class)
-3. ✅ **Composition** (NavbarPage as component)
-
-**Implementation:**
-
-```typescript
-export class ProductsPage {
-  readonly navbar: NavbarPage;
-
-  constructor(page: Page) {
-    this.navbar = new NavbarPage(page);
-  }
-}
-```
-
-**Why composition won:**
-
-- More flexible than inheritance
-- Can be mixed into any page
-- TypeScript-friendly
-- Easy to mock in unit tests
-
-### Why Centralize Types in types/
-
-**Problem:** Product defined in 3+ places.
-
-**Solution:** TypeScript utility types
-
-```typescript
-// types/product.types.ts
-export interface Product { ... } // Base
-
-export type ProductCreateInput = Omit<
-  Product,
-  'id' | 'createdAt' | 'updatedAt' | 'imageUrl' | 'description' | 'lowStockThreshold'
-> & {
-  description?: string;
-  lowStockThreshold?: number;
-};
-
-export type ProductUpdateInput = Partial<ProductCreateInput>;
-```
-
-**Advantages:**
-
-- Single source of truth
-- Type-safe transformations
-- Changes propagate automatically
-- Clear semantics (Create vs Update)
-
-### Why Validate Against localStorage
-
-**Alternative:** Hardcode expected values
-
-```typescript
-// ❌ Hardcoded
-expect(totalProducts).toBe(5);
-expect(lowStock).toBe(2);
-```
-
-**Problem:** Tests break if initial data changes.
-
-**Solution:** Read and calculate from localStorage
-
-```typescript
-// ✅ Data-driven
-const expected = await getExpectedStatsFromStorage(page);
-expect(actualTotal).toBe(expected.totalProducts);
-expect(actualLowStock).toBe(expected.lowStockItems);
-```
-
-**Benefits:**
-
-- Tests agnostic to dataset
-- Validate real logic
-- Easy to debug discrepancies
-- More maintainable
+- ✅ Functional (100%)
+- ✅ Validation (100%)
+- ✅ Edge cases (100%)
+- ✅ Cross-browser (100%)
+- ✅ Data-driven (100%)
+- ✅ Visual regression (17 tests)
 
 ---
 
@@ -1393,237 +438,95 @@ expect(actualLowStock).toBe(expected.lowStockItems);
 
 ### For the Application
 
-1. **Consistency in data-testids**
+1. Consistency in data-testids (add to new form errors)
+2. Accessibility improvements (ARIA labels, keyboard navigation)
+3. Separate labels from values in stats cards
+4. Filters should impact the URL so they can be shared between users and persist on reload
+5. A product detail screen should be added. Currently, the only way to view a product description is to enter edit mode.
 
-   - Add testids to new form errors
-   - Standardize error message formats
-   - Separate labels from values in stats cards
+### Bugs Found
 
-2. **Accessibility**
-
-   - Add appropriate ARIA labels
-   - Improve keyboard navigation
-   - Semantic roles on elements
-
-3. **Reset API**
-   - `POST /api/reset` already exists
-   - Could expose more options (reset specific modules)
+1. Email and password fields accept leading and trailing spaces
+2. Search fields have the same behavior as point 1
+3. It's a good practice in product management software for SKUs to be unique; in this case, the system lacks this validation and allows duplicates.
 
 ### For the Tests
 
-1. **Visual Regression Testing** ✅ **IMPLEMENTED**
-
-   - ✅ Playwright screenshot comparison with Docker
-   - ✅ Complete coverage across 5 pages (17 tests, 51 snapshots)
-   - ✅ Baseline images stored in repo (\*-linux.png)
-   - ✅ CI integration with artifact upload for failures
-   - ✅ Cross-OS tolerance configured (maxDiffPixelRatio: 0.03)
-
-2. **Performance Testing**
-
-   - Measure page load times
-   - Validate performance budgets
-   - Detect memory leaks
-
-3. **Accessibility Testing**
-
-   - Integrate `@axe-core/playwright`
-   - Validate WCAG compliance
-   - Test keyboard navigation
-
-4. **API Testing Integration**
-
-   - Data setup via API instead of UI
-   - Faster test execution
-   - Better isolation
-
-5. **Test Data Management**
-   - Factory pattern for generating products
-   - Scenario-specific datasets
-   - More robust automatic cleanup
+1. Performance testing (load times, budgets)
+2. Accessibility testing (`@axe-core/playwright`)
+3. API testing for faster data setup
 
 ### For CI/CD
 
-1. **✅ GitHub Actions Workflow** - **IMPLEMENTED (Day 5)**
-
-   ```yaml
-   ✅ Run on push/PR to main/master
-   ✅ 3-browser parallel matrix
-   ✅ Upload HTML reports (30-day retention)
-   ✅ Upload traces on failure
-   ✅ npm cache for faster builds
-   ✅ Browser-specific installation
-   ```
-
-   **Additional Enhancements (Future):**
-
-   - [ ] Parallel sharding for faster execution
-   - [ ] Test result comments on PRs
-   - [ ] Slack/Discord notifications
-
-2. **Test Reporting**
-
-   - Integration with reporting tools (e.g., Allure, ReportPortal)
-   - Result trending and analytics
-   - Custom dashboards
-
-3. **Scheduled Runs**
-   - Nightly complete runs
-   - Hourly smoke tests
-   - Weekly regression suite
+1. Parallel sharding for faster execution
+2. Test result comments on PRs
+3. Notifications (Slack/Discord)
 
 ---
 
 ## 📚 Additional Documentation
 
-### Project Documentation Files
+### Files in /docs
 
-This solution includes comprehensive documentation in the `/docs` folder:
+**BITACORA.md (438 lines):** Day-by-day work log with technical decisions, discoveries, and progress.
 
-#### 1. **BITACORA.md** (Work Log - 2000+ lines)
+**PLAYWRIGHT_CONTEXT.md:** Framework standards, conventions, and best practices.
 
-Detailed day-by-day work log documenting:
-
-- Daily tasks completed
-- Technical discoveries and solutions
-- Architecture decisions with rationale
-- Issues encountered and resolution times
-- Lessons learned
-- Progress tracking
-
-**Value:** Demonstrates systematic approach and problem-solving process.
-
-#### 2. **PLAYWRIGHT_CONTEXT.md** (Framework Agreements)
-
-Establishes testing framework standards:
-
-- Project structure
-- Coding conventions
-- Test organization patterns
-- Selector strategies
-- Best practices
-- Review checklists
-
-**Value:** Shows professional methodology and team collaboration mindset.
-
-#### 3. **SELECTORS.md** (Complete Catalog)
-
-Comprehensive catalog of all selectors:
-
-- All data-testids documented
-- Dynamic selector patterns
-- Conditional elements
-- Special cases and workarounds
-- Quick reference table
-
-**Value:** Demonstrates thorough exploration and documentation skills.
-
-### Why Include These Documents?
-
-**Benefits:**
-
-- 📋 **Transparency** - Shows complete thought process
-- 🎯 **Methodology** - Demonstrates systematic approach
-- 🔍 **Discovery Process** - Documents learning journey
-- 💡 **Knowledge Sharing** - Useful for future maintainers
-- 🏆 **Professionalism** - Goes beyond just working code
-
-**Note:** These documents were maintained throughout development, not created retroactively. This shows commitment to documentation-driven development.
+**SELECTORS.md (574 lines):** Complete selector catalog with dynamic patterns and special cases.
 
 ---
 
-## 🏆 Noteworthy Achievements
+## 📝 Implementation Summary
 
-### Quality Metrics
+### Coverage
 
-- **192/192 tests (100%)** across all browsers
-- **0 linter errors** across entire project
-- **~3,500 lines** of test code
-- **100% JSDoc coverage** on POMs and helpers
-- **6 POMs** complete and documented
-- **7 fixtures** (5 core + 2 E2E)
-- **5 helpers** well-organized
-- **4 E2E journeys** demonstrating business impact
+- 119 test cases (102 functional + 17 visual)
+- 357 total executions (119 tests × 3 browsers)
+- 0 linter errors
+- ~3,500 lines of test code
+- 100% JSDoc on POMs and helpers
+- 6 complete POMs
+- 7 fixtures
+- 4 E2E journeys
 
-### Technical Innovations
+### Applied Technical Patterns
 
-1. **Automatic role detection** in dashboard fixture
-2. **Centralized storage-helpers** (DRY)
-3. **TypeScript utility types** to avoid duplication
-4. **Dual-fallback** for UI inconsistencies
-5. **Three-step fill pattern** for webkit
-6. **Data-driven validation** against localStorage
-7. **Dual-fixture architecture** for E2E (base + authenticated)
-8. **Full circle validation** in E2E journeys
-9. **Multi-user collaboration** testing
+1. Automatic role detection in fixtures
+2. Centralized storage helpers (DRY)
+3. TypeScript utility types
+4. Dual-fallback for UI inconsistencies
+5. Three-step pattern for webkit
+6. Data-driven validation against localStorage
+7. Dual-fixture architecture for E2E
+8. Full circle validation in journeys
+9. Multi-user testing
+10. Visual regression with Docker
 
-### Differentiators
+### Technical Approach
 
-- **Comprehensive edge cases** (extreme numbers)
-- **Input interaction methods** (keyboard, consecutive, clear)
-- **100% cross-browser** (not just chromium)
-- **Zero hardcoded expectations**
-- **Clean code** (0 linter errors)
-- **Complete documentation** (BITACORA, SELECTORS, CONTEXT)
-- **4 E2E business journeys** (real-world scenarios)
-- **Multi-user testing** (session management)
-- **CI/CD operational** (GitHub Actions)
-
----
-
-## 📝 Resources and References
-
-### Patterns Implemented
-
-- **Page Object Model** - UI encapsulation
-- **Composition Pattern** - Reusable NavbarPage
-- **Fixture Pattern** - Automatic setup
-- **Helper Pattern** - Shared logic
-- **Re-export Pattern** - Backward compatibility
-
-### Best Practices Applied
-
-- ✅ Strict TypeScript
-- ✅ ESLint with Playwright rules
-- ✅ JSDoc on all public methods
-- ✅ Code in English (industry standard)
-- ✅ Descriptive git commits
-- ✅ DRY principle
-- ✅ SOLID principles (especially Single Responsibility)
-
----
-
-## 🕐 Time Investment
-
-- **Day 1 (Oct 8-9):** Initial setup, ESLint, gitignore, documentation (2h)
-- **Day 2 (Oct 10):** Login + Dashboard + Navbar + Products POMs and test suites (8h)
-- **Day 3 (Oct 11):** Inventory + Storage helpers + CI/CD + E2E Journeys + Complete documentation (9h)
-- **Day 4 (Oct 12):** Data-driven testing + Product Form dual validation (localStorage + UI) (6h)
-- **Total:** ~25 hours over 4 days
+- Comprehensive edge cases
+- Different input interaction methods
+- 100% cross-browser
+- No hardcoded values
+- Exhaustive documentation
+- E2E with realistic scenarios
+- Operational CI/CD
 
 ---
 
 ## 🎯 Key Learnings
 
-1. **ESLint is your friend** - Playwright rules prevent bad practices
-2. **MCP accelerates development** - Visual exploration saves time
-3. **Webkit requires care** - Always `waitFor` before `fill`
-4. **DRY applies to helpers too** - Not just production code
-5. **Data-driven is superior** - More robust and maintainable tests
-6. **CI/CD from day 1** - Setting up automation early pays dividends
-7. **E2E needs proper fixtures** - Dual-fixture pattern solves auth challenges
-8. **Full circle validation** - Initial state === final state proves integrity
-9. **E2E isolation matters** - Separate files prevent race conditions
-10. **expect.poll() for async** - Better than waitForTimeout for state updates
+1. ESLint with Playwright rules detects anti-patterns and improves LLM interaction
+2. MCP accelerates UI exploration
+3. Webkit requires explicit waits before fill
+4. DRY also applies to test helpers
+5. Data-driven tests are more robust and maintainable
+6. CI/CD from early on facilitates continuous integration
+7. Appropriate fixtures simplify complex E2E tests
+8. Full circle validation proves system integrity
+9. Separate files prevent race conditions in E2E
+10. expect.poll() is preferable to waitForTimeout for async validations
 
 ---
 
-## 📧 Contact Information
-
-**Author:** Jeremías Folgado  
-**Repository:** [URL to public repository]  
-**Submission Date:** October 16, 2025
-
----
-
-**Note:** This solution demonstrates production-ready test automation with industry best practices, CI/CD automation, comprehensive E2E coverage, and data-driven testing architecture with dual validation pattern (localStorage + UI). All three levels (Level 1, Level 2, and Level 3) are substantially complete, exceeding all requirements with 300 tests passing, 4 business journeys, data-driven test data management, and operational CI/CD pipeline.
+**Note:** This solution implements test automation following industry best practices, with integrated CI/CD, E2E coverage, data-driven architecture using locally stored data as the source of truth and validated in the UI, and visual regression testing. The three levels of difficulty are completed with 119 test cases executed across 3 browsers (357 total executions), 4 business journeys, and one operational CI/CD process.

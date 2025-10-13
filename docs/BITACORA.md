@@ -3,10 +3,9 @@
 ## 📌 Project Information
 
 - **Start Date:** October 8, 2025 (Tuesday - first commit)
-- **Delivery Date:** October 16, 2025
+- **Delivery Date:** October 13, 2025
 - **Challenge:** Portrait QA Automation Engineer Challenge
 - **Framework:** Playwright + TypeScript
-- **Current Day:** Day 4 (Saturday, October 12, 2025)
 
 ---
 
@@ -48,7 +47,7 @@
 **Login Module:**
 
 - Basic login functionality
-- Complete login suite with 10 tests
+- Complete login suite with 4 test cases (12 executions across 3 browsers)
 - Form validation and error handling
 
 **Dashboard Module:**
@@ -60,7 +59,7 @@
 **Products Module:**
 
 - Product management POMs
-- Complete test suite (36 tests)
+- Complete test suite (12 test cases, 36 executions)
 - Search, filter, sort, delete functionality
 
 **Navbar Component:**
@@ -103,7 +102,7 @@
 **Inventory Module:**
 
 - Complete POM implementation
-- 18 comprehensive tests
+- 6 test cases (18 executions across 3 browsers)
 - Stock adjustment functionality
 - Low stock alerts
 - Modal interactions
@@ -126,7 +125,7 @@
 
 - 4 real-world scenarios implemented
 - Multi-module integration
-- 16 tests total (4 scenarios × 4 tests)
+- 4 test cases (12 executions across 3 browsers)
 - 60s timeout for complex flows
 
 **Commits:**
@@ -168,7 +167,7 @@ Implement data-driven testing system and dual validation pattern (localStorage +
 - [x] Created structured test data JSON file (33 organized products)
 - [x] Implemented `ensureProductsExist` helper for bulk data loading
 - [x] Enhanced Products fixture with automatic data loading
-- [x] Expanded Products test suite from 36 to 78 tests (+117%)
+- [x] Expanded Products test suite from 12 to 26 test cases (+117%)
 - [x] Added new POM methods for data extraction
 - [x] Centralized type definitions
 
@@ -182,7 +181,7 @@ Implement data-driven testing system and dual validation pattern (localStorage +
 - [x] Refactored all Product Form tests to use dual validation
 - [x] Fixed ID vs SKU usage in UI queries
 - [x] Removed all hardcoded expected values
-- [x] Expanded Product Form suite from 27 to 81 tests (+200%)
+- [x] Expanded Product Form suite from 9 to 27 test cases (+200%)
 - [x] Validated actual UI formatting (no comma separators)
 
 ### 🔧 Data-Driven System Implementation
@@ -223,9 +222,10 @@ export async function clearAllProducts(page: Page): Promise<void>;
 
 **Products Suite Growth:**
 
-- Initial: 36 tests
-- Added: 42 new tests
-- **Final: 78 tests (+117% coverage)**
+- Initial: 12 test cases
+- Added: 14 new test cases
+- **Final: 26 test cases (+117% coverage)**
+- Total executions: 78 (26 tests × 3 browsers)
 
 **New Test Cases:**
 
@@ -241,7 +241,8 @@ export async function clearAllProducts(page: Page): Promise<void>;
 
 | Metric                | Before    | After              | Improvement |
 | --------------------- | --------- | ------------------ | ----------- |
-| **Tests**             | 36        | 78                 | +117%       |
+| **Test Cases**        | 12        | 26                 | +117%       |
+| **Executions**        | 36        | 78                 | +117%       |
 | **10 products setup** | ~30s (UI) | <1s (localStorage) | 30x faster  |
 | **Maintainability**   | Low       | High               | ✅          |
 
@@ -275,25 +276,27 @@ expect(productData.name).toBe(product!.name); // Uses localStorage value
 - **No Hardcoded Values**: All assertions derive from localStorage
 - **Actual Formatting**: Prices/stock don't use comma separators
 
-**Product Form Tests Expanded: 27 → 81 tests (+200%)**
+**Product Form Tests Expanded: 9 → 27 test cases (+200%)**
 
-**Coverage:**
+**Coverage (per browser):**
 
-- Product Creation (3 tests with dual validation)
-- Product Editing (3 tests)
-- Optional Fields (3 tests)
-- Edge Cases (7 tests)
-- Data-Driven Validation (2 tests)
-- Form Validation (9 tests)
-- Form Navigation (1 test)
+- Product Creation (1 test case with dual validation)
+- Product Editing (1 test case)
+- Optional Fields (1 test case)
+- Edge Cases (7 test cases)
+- Data-Driven Validation (2 test cases)
+- Form Validation (9 test cases)
+- Form Navigation (1 test case)
+
+**Total executions: 81 (27 tests × 3 browsers)**
 
 ### ✅ Combined Test Results
 
 ```bash
-Running 300 tests using 4 workers
-  284 passed
-  1 flaky (passed on retry)
-  15 skipped (challenge examples)
+Running 100 test cases across 3 browsers (300 total executions) using 4 workers
+  95 test cases passed (285 executions)
+  1 flaky test case (passed on retry)
+  5 skipped test cases (challenge examples - 15 executions)
   100% success rate on active tests
 ```
 
@@ -307,19 +310,21 @@ Running 300 tests using 4 workers
 
 **Test Coverage:**
 
-- Login: 10 tests
-- Dashboard: 12 tests
-- Inventory: 18 tests
-- Products: 78 tests (expanded from 36)
-- Product Form: 81 tests (expanded from 27)
-- E2E Journeys: 16 tests
-- Example Suite: 15 tests (skipped)
-- **Total: 300 tests (100 per browser)**
-- **Active: 285 tests, 284 passing + 1 flaky ✅**
+- Login: 12 test cases (4 functional + 4 visual) = 36 executions
+- Dashboard: 6 test cases (4 functional + 2 visual) = 18 executions
+- Inventory: 24 test cases (22 functional + 2 visual) = 72 executions
+- Products: 26 test cases (21 functional + 5 visual) = 78 executions
+- Product Form: 31 test cases (27 functional + 4 visual) = 93 executions
+- E2E Journeys: 4 test cases = 12 executions
+- Example Suite: 2 test cases (provided with challenge) = 6 executions
+- Skipped: 5 test cases (example-product-lifecycle.spec.ts)
+- **Total: 119 test cases (102 functional + 17 visual)**
+- **Total executions: 357 (119 tests × 3 browsers)**
+- **Active tests written: 119 tests, 100% passing ✅**
 
 ### Key Achievements
 
-1. **Comprehensive Test Suite**: 300 tests covering all major user journeys
+1. **Comprehensive Test Suite**: 119 test cases covering all major user journeys (357 total executions across 3 browsers)
 2. **Data-Driven Approach**: 33 organized products, localStorage manipulation
 3. **Dual Validation Pattern**: localStorage + UI validation
 4. **Clean Architecture**: POMs, fixtures, helpers
@@ -365,12 +370,13 @@ Running 300 tests using 4 workers
 2. **Test Suite**
 
    - Created visual test files for all major pages:
-     - `tests/login/login.visual.spec.ts` (4 tests)
-     - `tests/dashboard/dashboard.visual.spec.ts` (2 tests)
-     - `tests/inventory/inventory.visual.spec.ts` (2 tests)
-     - `tests/products/products.visual.spec.ts` (5 tests)
-     - `tests/products/product-form.visual.spec.ts` (4 tests)
-   - 51 snapshots total (17 tests × 3 browsers)
+     - `tests/login/login.visual.spec.ts` (4 test cases)
+     - `tests/dashboard/dashboard.visual.spec.ts` (2 test cases)
+     - `tests/inventory/inventory.visual.spec.ts` (2 test cases)
+     - `tests/products/products.visual.spec.ts` (5 test cases)
+     - `tests/products/product-form.visual.spec.ts` (4 test cases)
+   - 17 test cases total
+   - 51 snapshots/executions (17 tests × 3 browsers)
 
 3. **Commands**
 
@@ -385,11 +391,6 @@ Running 300 tests using 4 workers
      - Playwright HTML report
      - Test traces (`.zip` files for debugging)
      - Visual test failures (diff/actual screenshots)
-
-5. **Documentation**
-   - Created comprehensive `docs/VISUAL_REGRESSION.md`
-   - Documented Docker workflow and best practices
-   - Included troubleshooting guide
 
 ### Key Decisions
 
@@ -408,9 +409,11 @@ Running 300 tests using 4 workers
 
 ### Metrics
 
-- **Visual tests added**: 17 tests across 5 pages
+- **Visual tests added**: 17 test cases across 5 pages
 - **Snapshots generated**: 51 (17 tests × 3 browsers)
-- **Total test count**: 321 tests (304 functional + 17 visual)
+- **Total test cases**: 119 (102 functional + 17 visual)
+- **Total executions**: 357 (119 tests × 3 browsers)
+- **Excluding example tests**: 2 example tests provided with the challenge
 - **Docker build time**: ~2 minutes
 - **Snapshot generation time**: ~3-4 minutes
 - **maxDiffPixelRatio**: 0.03 (3% tolerance for cross-OS font rendering)
@@ -428,8 +431,8 @@ Running 300 tests using 4 workers
 - Added UI data reading methods to `InventoryPage`:
   - `getStockFromUI()` - Read stock from table
   - `getStatusFromUI()` - Read status badge ("Low Stock", "Medium", "In Stock")
-- **Inventory tests**: 18 → 22 tests (+4)
-- **Functional tests total**: 300 → 304 tests
+- **Inventory tests**: 6 → 8 test cases (+2)
+- **Functional test cases total**: 100 → 101 test cases
 - **All tests passing**: ✅ 100% across chromium, firefox, webkit
 
 ---
